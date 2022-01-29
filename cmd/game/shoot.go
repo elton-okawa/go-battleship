@@ -3,6 +3,7 @@ package main
 import (
 	"elton-okawa/battleship/internal/engine"
 	"errors"
+	"fmt"
 	"strconv"
 )
 
@@ -33,5 +34,8 @@ func (s *Shoot) Parse(args []string) error {
 }
 
 func (s *Shoot) Execute() {
-	engine.Shoot(s.row, s.col)
+	hit, ships, board := engine.Shoot(s.row, s.col)
+	fmt.Printf("%s", board)
+	fmt.Printf("Your shot hit: %t\n", hit)
+	fmt.Printf("There is/are %d ships squares remaining\n", ships)
 }

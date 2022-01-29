@@ -14,6 +14,7 @@ func StartGame() {
 	fmt.Println(board)
 }
 
-func Shoot(row, col int) (bool, int) {
-	return board.Shoot(row, col)
+func Shoot(row, col int) (bool, int, *Board) {
+	hit, ships := board.Shoot(row, col)
+	return hit, ships, &board
 }
