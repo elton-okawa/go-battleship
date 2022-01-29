@@ -6,5 +6,6 @@ type Command interface {
 }
 
 var Commands = map[string]Command{
-	"start": Start{},
+	"start": &Start{},
+	"shoot": &Shoot{},
 }
