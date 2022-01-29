@@ -34,10 +34,14 @@ func (s *Shoot) Parse(args []string) error {
 }
 
 func (s *Shoot) Execute() (bool, error) {
-	hit, ships, board := engine.Shoot(s.row, s.col)
-	fmt.Println(board)
-	fmt.Printf("Your shot hit: %t\n", hit)
-	fmt.Printf("There is/are %d ships squares remaining\n", ships)
+	hit, ships, board, err := engine.Shoot(s.row, s.col)
+	if err != nil {
+		return false, err
+	} else {
+		fmt.Println(board)
+		fmt.Printf("Your shot hit: %t\n", hit)
+		fmt.Printf("There is/are %d ships squares remaining\n", ships)
 
-	return ships == 0, nil
+		return ships == 0, err
+	}
 }

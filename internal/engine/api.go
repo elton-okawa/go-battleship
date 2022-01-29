@@ -1,18 +1,36 @@
 package engine
 
 import (
+	"errors"
 	"fmt"
 )
 
 // TODO persist it somewhere
-var board Board
-
-func StartGame() {
-	board = Init()
-	fmt.Println(board)
+type GameState struct {
+	board    Board
+	finished bool
 }
 
-func Shoot(row, col int) (bool, int, *Board) {
-	hit, ships := board.Shoot(row, col)
-	return hit, ships, &board
+var state GameState = GameState{finished: true}
+
+func StartGame() {
+	if !state.finished {
+		fmt.Println("Game in progress")
+	}
+
+	state.board = Init()
+	state.finished = false
+	fmt.Println(state.board)
+}
+
+func Shoot(row, col int) (bool, int, *Board, error) {
+	if state.finished {
+		return false, 0, nil, errors.New("game finished or not started")
+	}
+
+	hit, ships := state.board.Shoot(row, col)
+	if ships == 0 {
+		state.finished = false
+	}
+	return hit, ships, &state.board, nil
 }
