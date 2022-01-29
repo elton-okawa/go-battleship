@@ -2,6 +2,7 @@ package engine
 
 import (
 	"math/rand"
+	"strconv"
 	"strings"
 )
 
@@ -85,13 +86,34 @@ func placeShip(board *Board, char rune, size int) {
 
 func (b Board) String() string {
 	var sb strings.Builder
+
+	// Coordinates helper
+	sb.WriteString("\\")
+	addNumberRow(&sb, b.size)
+	sb.WriteRune(' ')
+	addNumberRow(&sb, b.size)
+
 	for i := 0; i < b.size; i++ {
-		for j := 0; j < b.size; j++ {
-			sb.WriteRune(b.placement[i][j])
-			sb.WriteRune(' ')
-		}
 		sb.WriteRune('\n')
+		sb.WriteString(strconv.Itoa(i))
+		for j := 0; j < b.size; j++ {
+			sb.WriteRune(' ')
+			sb.WriteRune(b.placement[i][j])
+		}
+
+		sb.WriteRune(' ')
+		for j := 0; j < b.size; j++ {
+			sb.WriteRune(' ')
+			sb.WriteRune(b.state[i][j])
+		}
 	}
 
 	return sb.String()
+}
+
+func addNumberRow(sb *strings.Builder, size int) {
+	for row := 0; row < size; row++ {
+		sb.WriteRune(' ')
+		sb.WriteString(strconv.Itoa(row))
+	}
 }
