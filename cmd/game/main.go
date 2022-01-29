@@ -15,7 +15,7 @@ func main() {
 		input := scanner.Text()
 		if len(input) <= 0 {
 			fmt.Println("> You must type a command")
-		} else if input == "quit" {
+		} else if input == "quit" || input == "exit" {
 			fmt.Println("> Bye")
 			break
 		} else {
