@@ -24,10 +24,13 @@ func main() {
 			cmd := splitted[0]
 			args := splitted[1:]
 
-			executeCommand(cmd, args)
+			if end := executeCommand(cmd, args); end {
+				fmt.Println("> End game")
+				break
+			}
 		}
 
-		fmt.Printf("> Type a command: ")
+		fmt.Printf("\n> Type a command: ")
 	}
 
 	if err := scanner.Err(); err != nil {
@@ -35,14 +38,21 @@ func main() {
 	}
 }
 
-func executeCommand(cmd string, args []string) {
+func executeCommand(cmd string, args []string) bool {
 	if _, exist := Commands[cmd]; exist {
 		if err := Commands[cmd].Parse(args); err == nil {
-			Commands[cmd].Execute()
+			end, err := Commands[cmd].Execute()
+			if err != nil {
+				fmt.Println(err)
+			}
+
+			return end
 		} else {
 			fmt.Println(err)
 		}
 	} else {
 		fmt.Printf("> Command '%s' not found\n", cmd)
 	}
+
+	return false
 }

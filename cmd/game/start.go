@@ -11,6 +11,8 @@ func (s *Start) Parse([]string) error {
 	return nil
 }
 
-func (s *Start) Execute() {
+func (s *Start) Execute() (bool, error) {
 	engine.StartGame()
+
+	return false, nil
 }

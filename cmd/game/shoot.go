@@ -33,9 +33,11 @@ func (s *Shoot) Parse(args []string) error {
 	return nil
 }
 
-func (s *Shoot) Execute() {
+func (s *Shoot) Execute() (bool, error) {
 	hit, ships, board := engine.Shoot(s.row, s.col)
 	fmt.Println(board)
 	fmt.Printf("Your shot hit: %t\n", hit)
 	fmt.Printf("There is/are %d ships squares remaining\n", ships)
+
+	return ships == 0, nil
 }

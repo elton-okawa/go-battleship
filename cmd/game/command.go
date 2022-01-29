@@ -2,7 +2,7 @@ package main
 
 type Command interface {
 	Parse([]string) error
-	Execute()
+	Execute() (bool, error)
 }
 
 var Commands = map[string]Command{

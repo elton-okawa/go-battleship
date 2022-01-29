@@ -8,8 +8,6 @@ import (
 var board Board
 
 func StartGame() {
-	fmt.Println("Start game")
-
 	board = Init()
 	fmt.Println(board)
 }
