@@ -30,7 +30,7 @@ func Shoot(row, col int) (bool, int, *Board, error) {
 
 	hit, ships := state.board.Shoot(row, col)
 	if ships == 0 {
-		state.finished = false
+		state.finished = true
 	}
 	return hit, ships, &state.board, nil
 }

@@ -42,6 +42,10 @@ func (s *Shoot) Execute() (bool, error) {
 		fmt.Printf("Your shot hit: %t\n", hit)
 		fmt.Printf("There is/are %d ships squares remaining\n", ships)
 
+		if ships == 0 {
+			fmt.Printf("Game finished, you can start another one\n")
+		}
+
 		return ships == 0, err
 	}
 }

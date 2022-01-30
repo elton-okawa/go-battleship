@@ -24,10 +24,7 @@ func main() {
 			cmd := splitted[0]
 			args := splitted[1:]
 
-			if end := executeCommand(cmd, args); end {
-				fmt.Println("> End game")
-				break
-			}
+			executeCommand(cmd, args)
 		}
 
 		fmt.Printf("\n> Type a command: ")
