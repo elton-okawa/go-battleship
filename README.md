@@ -16,8 +16,13 @@ Ships
 * Cruiser - 3 squares
 * Battleship - 4 squares
 
+## Testing
+
+```
+go test ./**/*
+```
+
 ## TODO
 
 * Random placement bigger ships - now we only place single square
 * Keep track if an entire ship was sinked (more than one square)
-* Help command which shows all available commands
