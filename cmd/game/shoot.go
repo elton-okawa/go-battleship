@@ -12,6 +12,10 @@ type Shoot struct {
 	col int
 }
 
+func (s *Shoot) Description() string {
+	return "<row> <col> - shoot at <row> <col>"
+}
+
 func (s *Shoot) Parse(args []string) error {
 	if len(args) != 2 {
 		return errors.New("shoot command must receive exactly 2 arguments")

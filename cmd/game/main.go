@@ -9,6 +9,8 @@ import (
 )
 
 func main() {
+	printWelcomeMessage()
+
 	scanner := bufio.NewScanner(os.Stdin)
 	fmt.Printf("> Type a command: ")
 	for scanner.Scan() {
@@ -18,6 +20,8 @@ func main() {
 		} else if input == "quit" || input == "exit" {
 			fmt.Println("> Bye")
 			break
+		} else if input == "help" {
+			printCommandsHelp()
 		} else {
 			splitted := strings.Split(input, " ")
 
@@ -33,6 +37,21 @@ func main() {
 	if err := scanner.Err(); err != nil {
 		log.Println(err)
 	}
+}
+
+func printWelcomeMessage() {
+	fmt.Printf("\n##########################################\n\n")
+	fmt.Println("\tWelcome to Battleship game")
+	fmt.Printf("\n##########################################\n\n")
+	printCommandsHelp()
+}
+
+func printCommandsHelp() {
+	fmt.Println("Available commands:")
+	for k, v := range Commands {
+		fmt.Printf("\t%s %s\n", k, v.Description())
+	}
+	fmt.Println()
 }
 
 func executeCommand(cmd string, args []string) bool {

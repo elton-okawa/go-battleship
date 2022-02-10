@@ -7,6 +7,10 @@ import (
 type Start struct {
 }
 
+func (s *Start) Description() string {
+	return "- start a game"
+}
+
 func (s *Start) Parse([]string) error {
 	return nil
 }
