@@ -4,10 +4,16 @@ Implementation of [florinpop - App Ideas - Battleship Game Engine](https://githu
 
 ## How to play
 
-Run
+Run server
+```
+go run ./cmd/server
+```
+
+Run CLI
 ```
 go run ./cmd/game/*
 ```
+
 
 ## Rules
 

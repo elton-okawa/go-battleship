@@ -7,30 +7,32 @@ import (
 
 // TODO persist it somewhere
 type GameState struct {
-	board    Board
-	finished bool
+	Board    Board
+	Finished bool
 }
 
-var state GameState = GameState{finished: true}
+var state GameState = GameState{Finished: true}
 
-func StartGame() {
-	if !state.finished {
+func StartGame() GameState {
+	if !state.Finished {
 		fmt.Println("Game in progress")
 	}
 
-	state.board = Init()
-	state.finished = false
-	fmt.Println(state.board)
+	state.Board = Init()
+	state.Finished = false
+	fmt.Println(state.Board)
+
+	return state
 }
 
 func Shoot(row, col int) (bool, int, *Board, error) {
-	if state.finished {
+	if state.Finished {
 		return false, 0, nil, errors.New("game finished or not started")
 	}
 
-	hit, ships := state.board.Shoot(row, col)
+	hit, ships := state.Board.Shoot(row, col)
 	if ships == 0 {
-		state.finished = true
+		state.Finished = true
 	}
-	return hit, ships, &state.board, nil
+	return hit, ships, &state.Board, nil
 }
