@@ -36,5 +36,8 @@ go tool cover -html=cover.out -o cover.html
 
 ## TODO
 
+* Create account
+* Persist each game state in a DS
+* Persist player statistic over games
 * Random placement bigger ships - now we only place single square
 * Keep track if an entire ship was sinked (more than one square)
