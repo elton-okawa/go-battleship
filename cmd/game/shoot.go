@@ -1,7 +1,7 @@
 package main
 
 import (
-	"elton-okawa/battleship/internal/engine"
+	"elton-okawa/battleship/internal/use_case"
 	"errors"
 	"fmt"
 	"strconv"
@@ -38,7 +38,7 @@ func (s *Shoot) Parse(args []string) error {
 }
 
 func (s *Shoot) Execute() (bool, error) {
-	hit, ships, board, err := engine.Shoot(s.row, s.col)
+	hit, ships, board, err := use_case.Shoot(s.row, s.col)
 	if err != nil {
 		return false, err
 	} else {

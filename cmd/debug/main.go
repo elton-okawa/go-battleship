@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"elton-okawa/battleship/internal/engine"
+	"elton-okawa/battleship/internal/use_case"
 )
 
 func main() {
@@ -29,6 +29,6 @@ func main() {
 	}
 
 	if debugCommand.Parsed() {
-		engine.StartGame()
+		use_case.StartGame()
 	}
 }

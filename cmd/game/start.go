@@ -1,7 +1,7 @@
 package main
 
 import (
-	"elton-okawa/battleship/internal/engine"
+	"elton-okawa/battleship/internal/use_case"
 )
 
 type Start struct {
@@ -16,7 +16,7 @@ func (s *Start) Parse([]string) error {
 }
 
 func (s *Start) Execute() (bool, error) {
-	engine.StartGame()
+	use_case.StartGame()
 
 	return false, nil
 }

@@ -1,13 +1,14 @@
-package engine
+package use_case
 
 import (
+	"elton-okawa/battleship/internal/entity"
 	"errors"
 	"fmt"
 )
 
 // TODO persist it somewhere
 type GameState struct {
-	Board    Board
+	Board    entity.Board
 	Finished bool
 }
 
@@ -18,14 +19,14 @@ func StartGame() GameState {
 		fmt.Println("Game in progress")
 	}
 
-	state.Board = Init()
+	state.Board = entity.Init()
 	state.Finished = false
 	fmt.Println(state.Board)
 
 	return state
 }
 
-func Shoot(row, col int) (bool, int, *Board, error) {
+func Shoot(row, col int) (bool, int, *entity.Board, error) {
 	if state.Finished {
 		return false, 0, nil, errors.New("game finished or not started")
 	}
