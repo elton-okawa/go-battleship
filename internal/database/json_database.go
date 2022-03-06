@@ -56,7 +56,7 @@ func (jd *JsonDatabase) getData() (map[string]interface{}, error) {
 
 func (jd *JsonDatabase) Save(m interface{}) {
 	r := reflect.ValueOf(m)
-	id := reflect.Indirect(r).FieldByName("id")
+	id := reflect.Indirect(r).FieldByName("Id")
 
 	if id.String() == "" {
 		id.SetString(uuid.NewString())

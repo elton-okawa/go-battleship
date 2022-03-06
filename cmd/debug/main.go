@@ -44,8 +44,8 @@ func main() {
 }
 
 type DebugModel struct {
-	id    string
-	field string
+	Id    string `json:id`
+	Field string `json:field`
 }
 
 func handleDbCommand(operation string, id string, field string) {
@@ -59,7 +59,7 @@ func handleDbCommand(operation string, id string, field string) {
 
 	switch operation {
 	case "save":
-		dm := DebugModel{id: id, field: field}
+		dm := DebugModel{Id: id, Field: field}
 		db.Save(dm)
 	}
 }
