@@ -14,14 +14,6 @@ Run CLI
 go run ./cmd/game/*
 ```
 
-
-## Rules
-
-Ships
-* Destroyer - 2 squares
-* Cruiser - 3 squares
-* Battleship - 4 squares
-
 ## Testing
 
 ```
