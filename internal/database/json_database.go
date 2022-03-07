@@ -2,8 +2,8 @@ package database
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
-	"log"
 	"reflect"
 
 	"github.com/google/uuid"
@@ -13,6 +13,8 @@ type JsonDatabase struct {
 	Filepath string
 	data     map[string]interface{}
 }
+
+var ErrNotFound = errors.New("Entity not found")
 
 func readDataFromFile(filepath string) (map[string]interface{}, error) {
 	data := make(map[string]interface{}, 0)
@@ -54,7 +56,7 @@ func (jd *JsonDatabase) getData() (map[string]interface{}, error) {
 	return jd.data, nil
 }
 
-func (jd *JsonDatabase) Save(m interface{}) {
+func (jd *JsonDatabase) Save(m interface{}) error {
 	r := reflect.ValueOf(m)
 	id := reflect.Indirect(r).FieldByName("Id")
 
@@ -64,12 +66,29 @@ func (jd *JsonDatabase) Save(m interface{}) {
 
 	data, err := jd.getData()
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	data[id.String()] = m
 
 	if err := saveDataToFile(jd.Filepath, data); err != nil {
-		log.Fatal(err)
+		return err
 	}
+
+	return nil
+}
+
+func (jd *JsonDatabase) Get(id string, out interface{}) error {
+	data, err := jd.getData()
+	if err != nil {
+		return err
+	}
+
+	if data[id] == nil {
+		return ErrNotFound
+	}
+
+	// TODO find a better way to convert map[string]interface{} -> struct
+	v, _ := json.Marshal(data[id])
+	return json.Unmarshal(v, out)
 }

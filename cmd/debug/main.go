@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
 
 	"elton-okawa/battleship/internal/database"
@@ -44,8 +45,8 @@ func main() {
 }
 
 type DebugModel struct {
-	Id    string `json:id`
-	Field string `json:field`
+	Id    string `json:"id"`
+	Field string `json:"field"`
 }
 
 func handleDbCommand(operation string, id string, field string) {
@@ -60,6 +61,15 @@ func handleDbCommand(operation string, id string, field string) {
 	switch operation {
 	case "save":
 		dm := DebugModel{Id: id, Field: field}
-		db.Save(dm)
+		if err := db.Save(dm); err != nil {
+			log.Fatal(err)
+		}
+	case "get":
+		var dm DebugModel
+		err := db.Get(id, &dm)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Printf("Output: %+v\n", dm)
 	}
 }
