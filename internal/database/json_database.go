@@ -36,7 +36,7 @@ func readDataFromFile(filepath string) (map[string]interface{}, error) {
 }
 
 func saveDataToFile(filepath string, data map[string]interface{}) error {
-	out, err := json.Marshal(data)
+	out, err := json.MarshalIndent(data, "", "  ")
 	if err != nil {
 		return err
 	}
