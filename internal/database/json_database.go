@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"io/ioutil"
-	"reflect"
 
 	"github.com/google/uuid"
 )
@@ -12,6 +11,11 @@ import (
 type JsonDatabase struct {
 	Filepath string
 	data     map[string]interface{}
+}
+
+type Entity interface {
+	GetId() string
+	SetId(string)
 }
 
 var ErrNotFound = errors.New("Entity not found")
@@ -56,12 +60,9 @@ func (jd *JsonDatabase) getData() (map[string]interface{}, error) {
 	return jd.data, nil
 }
 
-func (jd *JsonDatabase) Save(m interface{}) error {
-	r := reflect.ValueOf(m)
-	id := reflect.Indirect(r).FieldByName("Id")
-
-	if id.String() == "" {
-		id.SetString(uuid.NewString())
+func (jd *JsonDatabase) Save(e Entity) error {
+	if e.GetId() == "" {
+		e.SetId(uuid.NewString())
 	}
 
 	data, err := jd.getData()
@@ -69,7 +70,7 @@ func (jd *JsonDatabase) Save(m interface{}) error {
 		return err
 	}
 
-	data[id.String()] = m
+	data[e.GetId()] = e
 
 	if err := saveDataToFile(jd.Filepath, data); err != nil {
 		return err

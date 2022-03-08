@@ -7,8 +7,17 @@ import (
 
 // TODO persist it somewhere
 type GameState struct {
+	Id       string       `json:"id"`
 	Board    entity.Board `json:"board"`
 	Finished bool         `json:"finished"`
+}
+
+func (gs *GameState) GetId() string {
+	return gs.Id
+}
+
+func (gs *GameState) SetId(id string) {
+	gs.Id = id
 }
 
 type Game struct {

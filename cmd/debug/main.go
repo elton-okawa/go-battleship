@@ -48,6 +48,14 @@ type DebugModel struct {
 	Field string `json:"field"`
 }
 
+func (d *DebugModel) GetId() string {
+	return d.Id
+}
+
+func (d *DebugModel) SetId(id string) {
+	d.Id = id
+}
+
 func handleDbCommand(operation string, id string, field string) {
 	fmt.Printf("Db command (operation: %s, id: %s, field: %s)\n", operation, id, field)
 	db := database.JsonDatabase{Filepath: "./db/index.json"}
@@ -60,7 +68,7 @@ func handleDbCommand(operation string, id string, field string) {
 	switch operation {
 	case "save":
 		dm := DebugModel{Id: id, Field: field}
-		if err := db.Save(dm); err != nil {
+		if err := db.Save(&dm); err != nil {
 			log.Fatal(err)
 		}
 	case "get":
