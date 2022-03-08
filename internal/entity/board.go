@@ -7,10 +7,10 @@ import (
 )
 
 type Board struct {
-	placement [][]rune
-	state     [][]rune
-	size      int
-	shipCount int
+	Placement [][]rune `json:"placement"`
+	State     [][]rune `json:"state"`
+	Size      int      `json:"size"`
+	ShipCount int      `json:"shipCount"`
 }
 
 var EMPTY = '-'
@@ -25,13 +25,13 @@ func Init() Board {
 	state := emptyMap(size)
 
 	board := Board{
-		placement: placement,
-		state:     state,
-		size:      size,
-		shipCount: shipCount,
+		Placement: placement,
+		State:     state,
+		Size:      size,
+		ShipCount: shipCount,
 	}
 
-	for i := 0; i < board.shipCount; i++ {
+	for i := 0; i < board.ShipCount; i++ {
 		placeShip(&board, SINGLE_SQUARE_SHIP, 1)
 	}
 
@@ -55,17 +55,17 @@ func emptyMap(size int) [][]rune {
 }
 
 func (board *Board) Shoot(row, col int) (bool, int) {
-	hit := board.placement[row][col] == SINGLE_SQUARE_SHIP
+	hit := board.Placement[row][col] == SINGLE_SQUARE_SHIP
 	if hit {
-		board.state[row][col] = HIT
+		board.State[row][col] = HIT
 
 		// TODO bigger ships are not sinked right away
-		board.shipCount -= 1
+		board.ShipCount -= 1
 	} else {
-		board.state[row][col] = MISS
+		board.State[row][col] = MISS
 	}
 
-	return hit, board.shipCount
+	return hit, board.ShipCount
 }
 
 func placeShip(board *Board, char rune, size int) {
@@ -74,11 +74,11 @@ func placeShip(board *Board, char rune, size int) {
 	positioned := false
 
 	for !positioned {
-		row := rand.Intn(board.size)
-		col := rand.Intn(board.size)
+		row := rand.Intn(board.Size)
+		col := rand.Intn(board.Size)
 
-		if board.placement[row][col] == EMPTY {
-			board.placement[row][col] = char
+		if board.Placement[row][col] == EMPTY {
+			board.Placement[row][col] = char
 			positioned = true
 		}
 	}
@@ -89,22 +89,22 @@ func (b Board) String() string {
 
 	// Coordinates helper
 	sb.WriteString("\\")
-	addNumberRow(&sb, b.size)
+	addNumberRow(&sb, b.Size)
 	sb.WriteRune(' ')
-	addNumberRow(&sb, b.size)
+	addNumberRow(&sb, b.Size)
 
-	for i := 0; i < b.size; i++ {
+	for i := 0; i < b.Size; i++ {
 		sb.WriteRune('\n')
 		sb.WriteString(strconv.Itoa(i))
-		for j := 0; j < b.size; j++ {
+		for j := 0; j < b.Size; j++ {
 			sb.WriteRune(' ')
-			sb.WriteRune(b.placement[i][j])
+			sb.WriteRune(b.Placement[i][j])
 		}
 
 		sb.WriteRune(' ')
-		for j := 0; j < b.size; j++ {
+		for j := 0; j < b.Size; j++ {
 			sb.WriteRune(' ')
-			sb.WriteRune(b.state[i][j])
+			sb.WriteRune(b.State[i][j])
 		}
 	}
 

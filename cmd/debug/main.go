@@ -7,7 +7,6 @@ import (
 	"os"
 
 	"elton-okawa/battleship/internal/database"
-	"elton-okawa/battleship/internal/use_case"
 )
 
 func main() {
@@ -38,7 +37,7 @@ func main() {
 	}
 
 	if debugCommand.Parsed() {
-		use_case.StartGame()
+		// use_case.StartGame()
 	} else if databaseCommand.Parsed() {
 		handleDbCommand(*operationPtr, *idPtr, *fieldPtr)
 	}

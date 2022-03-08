@@ -4,6 +4,7 @@
 package api
 
 import (
+	"elton-okawa/battleship/internal/interface_adapter/controller"
 	"fmt"
 	"net/http"
 	"path"
@@ -43,7 +44,7 @@ func (g *GameRouter) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 }
 
 func (g *GameRouter) handlePost(res http.ResponseWriter, req *http.Request) {
-	game := PostGame()
+	game := controller.PostGame()
 
 	res.Write([]byte(game.Board.String()))
 }
