@@ -1,5 +1,7 @@
 # Go Battleship game
 
+This repository has the intention of studying Go Programming Language and [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
+
 Implementation of [florinpop - App Ideas - Battleship Game Engine](https://github.com/florinpop17/app-ideas/blob/master/Projects/3-Advanced/Battleship-Game-Engine.md)
 
 ## How to play
