@@ -37,7 +37,7 @@ func (g *Game) Start() (*GameState, error) {
 
 // Receives game id and row/col to shoot
 // Returns hit, remaining ships, board and error if happened
-func (g *Game) Shoot(id string, row, col int) (bool, int, *entity.Board, error) {
+func (g *Game) Shoot(id string, row, col int) (bool, int, *GameState, error) {
 	state, err := g.Persistence.GetGameState(id)
 	if err != nil {
 		return false, 0, nil, err
@@ -57,5 +57,5 @@ func (g *Game) Shoot(id string, row, col int) (bool, int, *entity.Board, error) 
 		return false, 0, nil, err
 	}
 
-	return hit, ships, &state.Board, nil
+	return hit, ships, state, nil
 }

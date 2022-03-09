@@ -4,15 +4,13 @@
 package api
 
 import (
-	"elton-okawa/battleship/internal/interface_adapter/controller"
-	"fmt"
 	"net/http"
 	"path"
 	"strings"
 )
 
 type App struct {
-	GameRouter *GameRouter
+	GamesRouter *GamesRouter
 }
 
 func (app *App) ServeHTTP(res http.ResponseWriter, req *http.Request) {
@@ -20,37 +18,23 @@ func (app *App) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 	resource, req.URL.Path = ShiftPath(req.URL.Path)
 
 	if resource == "games" {
-		app.GameRouter.ServeHTTP(res, req)
+		app.GamesRouter.ServeHTTP(res, req)
 	} else {
 		http.Error(res, "Not Implemented", http.StatusNotImplemented)
 	}
 }
 
-type GameRouter struct {
-}
-
-func (g *GameRouter) ServeHTTP(res http.ResponseWriter, req *http.Request) {
-	var resource string
-	resource, req.URL.Path = ShiftPath(req.URL.Path)
-
-	fmt.Println(resource)
-
-	if req.URL.Path == "/" {
-		switch req.Method {
-		case "POST":
-			g.handlePost(res, req)
-		}
-	}
-}
-
-func (g *GameRouter) handlePost(res http.ResponseWriter, req *http.Request) {
-	game := controller.PostGame()
-
-	res.Write([]byte(game.Board.String()))
-}
-
 // Splits given path into <head>/<tail>
-// Example: /users/10/receipts -> users, /10/receipts
+// Example - /users
+// - /users -> users, /
+// Example - /users/10
+// - /users/10 -> users, /10
+// - /10 -> 10, /
+// Example - /users/10/receipts
+// - /users/10/receipts -> users, /10/receipts
+// - /10/receipts -> 10, /receipts
+// - /receipts -> receipts, /
+//
 func ShiftPath(p string) (head, tail string) {
 	p = path.Clean("/" + p)
 	i := strings.Index(p[1:], "/") + 1
