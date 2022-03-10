@@ -9,16 +9,31 @@ import (
 	"strings"
 )
 
+type handler interface {
+	handle(http.ResponseWriter, *http.Request)
+}
+
+type handle func(http.ResponseWriter, *http.Request)
+type handleSub func(http.ResponseWriter, *http.Request, string)
+
 type App struct {
-	GamesRouter *GamesRouter
+	routers map[string]handler
+}
+
+func Init() *App {
+	return &App{
+		routers: map[string]handler{
+			"games": initGamesRouter(),
+		},
+	}
 }
 
 func (app *App) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 	var resource string
-	resource, req.URL.Path = ShiftPath(req.URL.Path)
+	resource, req.URL.Path = shiftPath(req.URL.Path)
 
-	if resource == "games" {
-		app.GamesRouter.ServeHTTP(res, req)
+	if router, exist := app.routers[resource]; exist {
+		router.handle(res, req)
 	} else {
 		http.Error(res, "Not Implemented", http.StatusNotImplemented)
 	}
@@ -35,7 +50,7 @@ func (app *App) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 // - /10/receipts -> 10, /receipts
 // - /receipts -> receipts, /
 //
-func ShiftPath(p string) (head, tail string) {
+func shiftPath(p string) (head, tail string) {
 	p = path.Clean("/" + p)
 	i := strings.Index(p[1:], "/") + 1
 	if i <= 0 {
