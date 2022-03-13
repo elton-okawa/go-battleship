@@ -13,8 +13,6 @@ type router interface {
 	route(http.ResponseWriter, *http.Request)
 }
 
-type prepareRouter func(string) router
-
 type handle func(http.ResponseWriter, *http.Request)
 
 type App struct {
@@ -34,7 +32,7 @@ func (app *App) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 	resource, req.URL.Path = shiftPath(req.URL.Path)
 
 	if router, exist := app.routers[resource]; exist {
-		router.handle(res, req)
+		router.route(res, req)
 	} else {
 		http.Error(res, "Not Implemented", http.StatusNotImplemented)
 	}

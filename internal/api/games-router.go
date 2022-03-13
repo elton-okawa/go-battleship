@@ -14,14 +14,19 @@ func (g *gamesRouter) route(rw http.ResponseWriter, r *http.Request) {
 
 	if id == "" {
 		(&gamesHandler{id: id}).handle(rw, r)
-	} else if router, exist := gamesSubRouters[id]; exist {
-		router(id).route(rw, r)
 	} else {
-		http.Error(rw, "Not implemented", http.StatusNotImplemented)
+		var resource string
+		resource, r.URL.Path = shiftPath(r.URL.Path)
+
+		if router, exist := gamesSubRouters[resource]; exist {
+			router(id).route(rw, r)
+		} else {
+			http.Error(rw, "Games resource not implemented", http.StatusNotImplemented)
+		}
 	}
 }
 
-var gamesSubRouters map[string]prepareRouter = map[string]prepareRouter{
+var gamesSubRouters map[string]func(string) router = map[string]func(string) router{
 	"actions": prepareGameActionRouter,
 }
 
@@ -33,7 +38,7 @@ func (gh *gamesHandler) handle(rw http.ResponseWriter, r *http.Request) {
 	if handler, exist := gamesMethods[r.Method]; exist {
 		handler(rw, r)
 	} else {
-		http.Error(rw, "Method not allowed", http.StatusMethodNotAllowed)
+		http.Error(rw, "Games method not allowed", http.StatusMethodNotAllowed)
 	}
 }
 
