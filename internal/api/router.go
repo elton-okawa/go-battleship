@@ -41,6 +41,7 @@ func (app *App) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 // Splits given path into <head>/<tail>
 // Example - /users
 // - /users -> users, /
+// - / -> "", /
 // Example - /users/10
 // - /users/10 -> users, /10
 // - /10 -> 10, /
