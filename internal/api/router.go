@@ -9,21 +9,22 @@ import (
 	"strings"
 )
 
-type handler interface {
-	handle(http.ResponseWriter, *http.Request)
+type router interface {
+	route(http.ResponseWriter, *http.Request)
 }
 
+type prepareRouter func(string) router
+
 type handle func(http.ResponseWriter, *http.Request)
-type handleSub func(http.ResponseWriter, *http.Request, string)
 
 type App struct {
-	routers map[string]handler
+	routers map[string]router
 }
 
 func Init() *App {
 	return &App{
-		routers: map[string]handler{
-			"games": initGamesRouter(),
+		routers: map[string]router{
+			"games": &gamesRouter{},
 		},
 	}
 }
