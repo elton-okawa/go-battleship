@@ -4,7 +4,8 @@ This repository has the intention of studying Go Programming Language and [Clean
 
 Implementation of [florinpop - App Ideas - Battleship Game Engine](https://github.com/florinpop17/app-ideas/blob/master/Projects/3-Advanced/Battleship-Game-Engine.md)
 
-Take a look at `docs/` folder to find more approach details:
+Take a look at `docs/` folder to find out more about:
+- [TODO](docs/TODO.md)
 - [Router](docs/router.md)
 
 ## How to play
@@ -30,11 +31,3 @@ go test ./**/* -v
 go test ./**/* -coverprofile cover.out
 go tool cover -html=cover.out -o cover.html
 ```
-
-## TODO
-
-* Create account
-* Persist each game state in a DS
-* Persist player statistic over games
-* Random placement bigger ships - now we only place single square
-* Keep track if an entire ship was sinked (more than one square)
