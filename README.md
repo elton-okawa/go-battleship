@@ -4,6 +4,9 @@ This repository has the intention of studying Go Programming Language and [Clean
 
 Implementation of [florinpop - App Ideas - Battleship Game Engine](https://github.com/florinpop17/app-ideas/blob/master/Projects/3-Advanced/Battleship-Game-Engine.md)
 
+Take a look at `docs/` folder to find more approach details:
+- [Router](docs/router.md)
+
 ## How to play
 
 Run server

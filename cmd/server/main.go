@@ -9,6 +9,6 @@ import (
 
 func main() {
 	fmt.Println("Server listening to :8080")
-	app := &api.App{}
+	app := api.Init()
 	log.Fatal(http.ListenAndServe(":8080", app))
 }
