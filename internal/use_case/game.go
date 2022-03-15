@@ -5,7 +5,6 @@ import (
 	"errors"
 )
 
-// TODO persist it somewhere
 type GameState struct {
 	Id       string       `json:"id"`
 	Board    entity.Board `json:"board"`
@@ -20,31 +19,41 @@ func (gs *GameState) SetId(id string) {
 	gs.Id = id
 }
 
-type Game struct {
-	Persistence GameStatePersistence
+func NewGame(gsp GameStatePersistence, gob GameOutputBoundary) *Game {
+	return &Game{
+		persistence: gsp,
+		output:      gob,
+	}
 }
 
-func (g *Game) Start() (*GameState, error) {
+type Game struct {
+	persistence GameStatePersistence
+	output      GameOutputBoundary
+}
+
+func (g *Game) Start() {
 	state := GameState{}
 	state.Board = entity.Init()
 	state.Finished = false
 
-	if err := g.Persistence.SaveGameState(&state); err != nil {
-		return nil, err
+	if err := g.persistence.SaveGameState(&state); err != nil {
+		g.output.StartResult(nil, err)
+	} else {
+		g.output.StartResult(&state, nil)
 	}
-	return &state, nil
 }
 
 // Receives game id and row/col to shoot
-// Returns hit, remaining ships, board and error if happened
-func (g *Game) Shoot(id string, row, col int) (bool, int, *GameState, error) {
-	state, err := g.Persistence.GetGameState(id)
+func (g *Game) Shoot(id string, row, col int) {
+	state, err := g.persistence.GetGameState(id)
 	if err != nil {
-		return false, 0, nil, err
+		g.output.ShootResult(nil, false, 0, err)
+		return
 	}
 
 	if state.Finished {
-		return false, 0, nil, errors.New("Game finished")
+		g.output.ShootResult(nil, false, 0, errors.New("Game finished"))
+		return
 	}
 
 	hit, ships := state.Board.Shoot(row, col)
@@ -52,10 +61,11 @@ func (g *Game) Shoot(id string, row, col int) (bool, int, *GameState, error) {
 		state.Finished = true
 	}
 
-	err = g.Persistence.SaveGameState(state)
+	err = g.persistence.SaveGameState(state)
 	if err != nil {
-		return false, 0, nil, err
+		g.output.ShootResult(nil, false, 0, err)
+		return
 	}
 
-	return hit, ships, state, nil
+	g.output.ShootResult(state, hit, ships, nil)
 }

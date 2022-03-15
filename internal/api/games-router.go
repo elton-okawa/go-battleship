@@ -5,15 +5,22 @@ import (
 	"net/http"
 )
 
-type gamesRouter struct {
+func NewGamesRouter(gc *controller.GamesController) *GamesRouter {
+	return &GamesRouter{
+		controller: gc,
+	}
 }
 
-func (g *gamesRouter) route(rw http.ResponseWriter, r *http.Request) {
+type GamesRouter struct {
+	controller *controller.GamesController
+}
+
+func (g *GamesRouter) route(rw http.ResponseWriter, r *http.Request) {
 	var id string
 	id, r.URL.Path = shiftPath(r.URL.Path)
 
 	if id == "" {
-		(&gamesHandler{id: id}).handle(rw, r)
+		(&gamesHandler{id: id, controller: g.controller}).handle(rw, r)
 	} else {
 		var resource string
 		resource, r.URL.Path = shiftPath(r.URL.Path)
@@ -31,23 +38,22 @@ var gamesSubRouters map[string]func(string) router = map[string]func(string) rou
 }
 
 type gamesHandler struct {
-	id string
+	controller *controller.GamesController
+	id         string
 }
 
 func (gh *gamesHandler) handle(rw http.ResponseWriter, r *http.Request) {
-	if handler, exist := gamesMethods[r.Method]; exist {
-		handler(rw, r)
-	} else {
+	switch r.Method {
+	case "POST":
+		gh.postGames(rw, r)
+	default:
 		http.Error(rw, "Games method not allowed", http.StatusMethodNotAllowed)
 	}
 }
 
-var gamesMethods map[string]handle = map[string]handle{
-	"POST": postGames,
-}
+func (gh *gamesHandler) postGames(rw http.ResponseWriter, r *http.Request) {
+	gh.controller.PostGame()
 
-func postGames(res http.ResponseWriter, req *http.Request) {
-	game := controller.PostGame()
-
-	res.Write([]byte(game.Board.String()))
+	// TODO how to deal with it
+	// res.Write([]byte(game.Board.String()))
 }

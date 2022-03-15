@@ -2,9 +2,7 @@ package api
 
 import (
 	"elton-okawa/battleship/internal/entity"
-	"elton-okawa/battleship/internal/interface_adapter/controller"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 )
@@ -59,15 +57,15 @@ func postShoot(res http.ResponseWriter, req *http.Request, gameId string) {
 		return
 	}
 
-	hit, ships, gameState := controller.Shoot(gameId, body.Row, body.Col)
-	shootRes := shootResponse{
-		Hit:   hit,
-		Ships: ships,
-		Board: gameState.Board,
-	}
+	// hit, ships, gameState := controller.Shoot(gameId, body.Row, body.Col)
+	// shootRes := shootResponse{
+	// 	Hit:   hit,
+	// 	Ships: ships,
+	// 	Board: gameState.Board,
+	// }
 
-	fmt.Println(gameState.Board.String())
-	resData, _ := json.Marshal(shootRes)
-	res.Header().Set("Content-Type", "application/json")
-	res.Write(resData)
+	// fmt.Println(gameState.Board.String())
+	// resData, _ := json.Marshal(shootRes)
+	// res.Header().Set("Content-Type", "application/json")
+	// res.Write(resData)
 }

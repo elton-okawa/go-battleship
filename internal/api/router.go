@@ -4,6 +4,10 @@
 package api
 
 import (
+	"elton-okawa/battleship/internal/database"
+	"elton-okawa/battleship/internal/interface_adapter/controller"
+	"elton-okawa/battleship/internal/interface_adapter/presenter"
+	"elton-okawa/battleship/internal/use_case"
 	"net/http"
 	"path"
 	"strings"
@@ -20,9 +24,16 @@ type App struct {
 }
 
 func Init() *App {
+	gameHandler := use_case.NewGame(
+		&database.DefaultDatabase,
+		&presenter.RestApiPresenter{},
+	)
+
+	gamesController := controller.NewGamesController(gameHandler)
+
 	return &App{
 		routers: map[string]router{
-			"games": &gamesRouter{},
+			"games": NewGamesRouter(gamesController),
 		},
 	}
 }
