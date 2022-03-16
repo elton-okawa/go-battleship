@@ -19,10 +19,10 @@ func (gc *GamesController) GetGame(id string) {
 	fmt.Println("Get games")
 }
 
-func (gc *GamesController) PostGame() {
-	gc.game.Start()
+func (gc *GamesController) PostGame(p use_case.GameOutputBoundary) {
+	gc.game.Start(p)
 }
 
-func (gc *GamesController) Shoot(id string, row int, col int) {
-	gc.game.Shoot(id, row, col)
+func (gc *GamesController) Shoot(p use_case.GameOutputBoundary, id string, row int, col int) {
+	gc.game.Shoot(p, id, row, col)
 }

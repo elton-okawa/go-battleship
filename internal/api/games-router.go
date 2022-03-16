@@ -2,17 +2,22 @@ package api
 
 import (
 	"elton-okawa/battleship/internal/interface_adapter/controller"
+	"elton-okawa/battleship/internal/interface_adapter/presenter"
 	"net/http"
 )
 
-func NewGamesRouter(gc *controller.GamesController) *GamesRouter {
+type newPresenterFunc func(http.ResponseWriter) *presenter.RestApiPresenter
+
+func NewGamesRouter(gc *controller.GamesController, np newPresenterFunc) *GamesRouter {
 	return &GamesRouter{
-		controller: gc,
+		controller:   gc,
+		newPresenter: np,
 	}
 }
 
 type GamesRouter struct {
-	controller *controller.GamesController
+	controller   *controller.GamesController
+	newPresenter newPresenterFunc
 }
 
 func (g *GamesRouter) route(rw http.ResponseWriter, r *http.Request) {
@@ -20,7 +25,12 @@ func (g *GamesRouter) route(rw http.ResponseWriter, r *http.Request) {
 	id, r.URL.Path = shiftPath(r.URL.Path)
 
 	if id == "" {
-		(&gamesHandler{id: id, controller: g.controller}).handle(rw, r)
+		gh := &gamesHandler{
+			id:         id,
+			controller: g.controller,
+			presenter:  g.newPresenter(rw),
+		}
+		gh.handle(rw, r)
 	} else {
 		var resource string
 		resource, r.URL.Path = shiftPath(r.URL.Path)
@@ -39,6 +49,7 @@ var gamesSubRouters map[string]func(string) router = map[string]func(string) rou
 
 type gamesHandler struct {
 	controller *controller.GamesController
+	presenter  *presenter.RestApiPresenter
 	id         string
 }
 
@@ -52,8 +63,8 @@ func (gh *gamesHandler) handle(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (gh *gamesHandler) postGames(rw http.ResponseWriter, r *http.Request) {
-	gh.controller.PostGame()
+	gh.controller.PostGame(gh.presenter)
 
-	// TODO how to deal with it
+	// TODO como lidar com o presenter sendo chamado pelo use case e mandar resposta via http?
 	// res.Write([]byte(game.Board.String()))
 }

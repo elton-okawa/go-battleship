@@ -19,40 +19,38 @@ func (gs *GameState) SetId(id string) {
 	gs.Id = id
 }
 
-func NewGame(gsp GameStatePersistence, gob GameOutputBoundary) *Game {
+func NewGame(gsp GameStatePersistence) *Game {
 	return &Game{
 		persistence: gsp,
-		output:      gob,
 	}
 }
 
 type Game struct {
 	persistence GameStatePersistence
-	output      GameOutputBoundary
 }
 
-func (g *Game) Start() {
+func (g *Game) Start(gob GameOutputBoundary) {
 	state := GameState{}
 	state.Board = entity.Init()
 	state.Finished = false
 
 	if err := g.persistence.SaveGameState(&state); err != nil {
-		g.output.StartResult(nil, err)
+		gob.StartResult(nil, err)
 	} else {
-		g.output.StartResult(&state, nil)
+		gob.StartResult(&state, nil)
 	}
 }
 
 // Receives game id and row/col to shoot
-func (g *Game) Shoot(id string, row, col int) {
+func (g *Game) Shoot(gob GameOutputBoundary, id string, row, col int) {
 	state, err := g.persistence.GetGameState(id)
 	if err != nil {
-		g.output.ShootResult(nil, false, 0, err)
+		gob.ShootResult(nil, false, 0, err)
 		return
 	}
 
 	if state.Finished {
-		g.output.ShootResult(nil, false, 0, errors.New("Game finished"))
+		gob.ShootResult(nil, false, 0, errors.New("Game finished"))
 		return
 	}
 
@@ -63,9 +61,9 @@ func (g *Game) Shoot(id string, row, col int) {
 
 	err = g.persistence.SaveGameState(state)
 	if err != nil {
-		g.output.ShootResult(nil, false, 0, err)
+		gob.ShootResult(nil, false, 0, err)
 		return
 	}
 
-	g.output.ShootResult(state, hit, ships, nil)
+	gob.ShootResult(state, hit, ships, nil)
 }

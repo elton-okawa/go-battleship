@@ -3,16 +3,22 @@ package presenter
 import (
 	"elton-okawa/battleship/internal/use_case"
 	"fmt"
+	"net/http"
 )
 
-type RestApiPresenter struct{}
+type RestApiPresenter struct {
+	responseWriter http.ResponseWriter
+}
 
-func NewRestApiPresenter() *RestApiPresenter {
-	return &RestApiPresenter{}
+func NewRestApiPresenter(rw http.ResponseWriter) *RestApiPresenter {
+	return &RestApiPresenter{
+		responseWriter: rw,
+	}
 }
 
 func (rp *RestApiPresenter) StartResult(gs *use_case.GameState, err error) {
-	fmt.Printf("%+v\n", gs)
+	// TODO handle error
+	rp.responseWriter.Write([]byte(gs.Board.String()))
 }
 
 func (rp *RestApiPresenter) ShootResult(gs *use_case.GameState, hit bool, ships int, err error) {

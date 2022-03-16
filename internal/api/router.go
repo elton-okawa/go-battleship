@@ -26,14 +26,15 @@ type App struct {
 func Init() *App {
 	gameHandler := use_case.NewGame(
 		&database.DefaultDatabase,
-		&presenter.RestApiPresenter{},
 	)
 
-	gamesController := controller.NewGamesController(gameHandler)
+	gamesController := controller.NewGamesController(
+		gameHandler,
+	)
 
 	return &App{
 		routers: map[string]router{
-			"games": NewGamesRouter(gamesController),
+			"games": NewGamesRouter(gamesController, presenter.NewRestApiPresenter),
 		},
 	}
 }
