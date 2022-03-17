@@ -14,10 +14,10 @@ import (
 )
 
 type router interface {
-	route(http.ResponseWriter, *http.Request)
+	route(*presenter.RestApiPresenter, *http.Request)
 }
 
-type handle func(http.ResponseWriter, *http.Request)
+type handle func(presenter.RestApiPresenter, *http.Request)
 
 type App struct {
 	routers map[string]router
@@ -34,19 +34,20 @@ func Init() *App {
 
 	return &App{
 		routers: map[string]router{
-			"games": NewGamesRouter(gamesController, presenter.NewRestApiPresenter),
+			"games": NewGamesRouter(gamesController),
 		},
 	}
 }
 
-func (app *App) ServeHTTP(res http.ResponseWriter, req *http.Request) {
+func (app *App) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	var resource string
-	resource, req.URL.Path = shiftPath(req.URL.Path)
+	resource, r.URL.Path = shiftPath(r.URL.Path)
 
+	presenter := presenter.NewRestApiPresenter(rw)
 	if router, exist := app.routers[resource]; exist {
-		router.route(res, req)
+		router.route(presenter, r)
 	} else {
-		http.Error(res, "Not Implemented", http.StatusNotImplemented)
+		presenter.Error("Not Implemented", http.StatusNotImplemented)
 	}
 }
 

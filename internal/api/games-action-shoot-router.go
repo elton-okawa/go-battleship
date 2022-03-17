@@ -2,28 +2,29 @@ package api
 
 import (
 	"elton-okawa/battleship/internal/entity"
+	"elton-okawa/battleship/internal/interface_adapter/presenter"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
 )
 
-type handleShoot func(http.ResponseWriter, *http.Request, string)
+type handleShoot func(*presenter.RestApiPresenter, *http.Request, string)
 
 type gameActionShootRouter struct {
 	gameId string
 }
 
-func prepareGameActionShootRouter(gameId string) router {
+func newGameActionShootRouter(gameId string) router {
 	return &gameActionShootRouter{
 		gameId: gameId,
 	}
 }
 
-func (sr *gameActionShootRouter) route(rw http.ResponseWriter, r *http.Request) {
+func (sr *gameActionShootRouter) route(p *presenter.RestApiPresenter, r *http.Request) {
 	if handle, exist := shootMethods[r.Method]; exist {
-		handle(rw, r, sr.gameId)
+		handle(p, r, sr.gameId)
 	} else {
-		http.Error(rw, "Shoot action method not allowed", http.StatusMethodNotAllowed)
+		p.Error("Shoot action method not allowed", http.StatusMethodNotAllowed)
 	}
 }
 
@@ -42,10 +43,10 @@ type shootResponse struct {
 	Board entity.Board `json:"board"`
 }
 
-func postShoot(res http.ResponseWriter, req *http.Request, gameId string) {
-	data, err := ioutil.ReadAll(req.Body)
+func postShoot(p *presenter.RestApiPresenter, r *http.Request, gameId string) {
+	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		http.Error(res, "Invalid body", 500)
+		p.Error("Invalid body", http.StatusInternalServerError)
 		return
 	}
 
@@ -53,7 +54,7 @@ func postShoot(res http.ResponseWriter, req *http.Request, gameId string) {
 	var body shootBody
 	err = json.Unmarshal(data, &body)
 	if err != nil {
-		http.Error(res, "Body does not contain required fields", 500)
+		p.Error("Body does not contain required fields", http.StatusInternalServerError)
 		return
 	}
 

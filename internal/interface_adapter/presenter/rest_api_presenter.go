@@ -24,3 +24,7 @@ func (rp *RestApiPresenter) StartResult(gs *use_case.GameState, err error) {
 func (rp *RestApiPresenter) ShootResult(gs *use_case.GameState, hit bool, ships int, err error) {
 	fmt.Printf("hit: %t, ships: %d\n", hit, ships)
 }
+
+func (rp *RestApiPresenter) Error(message string, code int) {
+	http.Error(rp.responseWriter, message, code)
+}
