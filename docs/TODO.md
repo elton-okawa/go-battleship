@@ -7,6 +7,8 @@ By priority
 * Document (with images) current architecture
 
 ### Medium
+* Document api
+* Improve tests
 * Create player account
 * Games by player
 * Two player battleship game
@@ -18,3 +20,6 @@ By priority
 
 ## Fix
 * Random is always generating the same map
+
+## Take a look
+* Open api and router bindings generator
