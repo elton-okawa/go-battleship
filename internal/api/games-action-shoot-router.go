@@ -8,8 +8,6 @@ import (
 	"net/http"
 )
 
-type handleShoot func(*presenter.RestApiPresenter, *http.Request, string)
-
 type gameActionShootRouter struct {
 	gameId     string
 	controller *controller.GamesController

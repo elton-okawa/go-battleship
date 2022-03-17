@@ -17,8 +17,6 @@ type router interface {
 	route(*presenter.RestApiPresenter, *http.Request)
 }
 
-type handle func(presenter.RestApiPresenter, *http.Request)
-
 type App struct {
 	routers map[string]router
 }
