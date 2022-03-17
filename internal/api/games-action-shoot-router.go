@@ -1,7 +1,7 @@
 package api
 
 import (
-	"elton-okawa/battleship/internal/entity"
+	"elton-okawa/battleship/internal/interface_adapter/controller"
 	"elton-okawa/battleship/internal/interface_adapter/presenter"
 	"encoding/json"
 	"io/ioutil"
@@ -11,25 +11,44 @@ import (
 type handleShoot func(*presenter.RestApiPresenter, *http.Request, string)
 
 type gameActionShootRouter struct {
-	gameId string
+	gameId     string
+	controller *controller.GamesController
 }
 
-func newGameActionShootRouter(gameId string) router {
+func newGameActionShootRouter(controller *controller.GamesController, gameId string) router {
 	return &gameActionShootRouter{
-		gameId: gameId,
+		gameId:     gameId,
+		controller: controller,
 	}
 }
 
 func (sr *gameActionShootRouter) route(p *presenter.RestApiPresenter, r *http.Request) {
-	if handle, exist := shootMethods[r.Method]; exist {
-		handle(p, r, sr.gameId)
+	var head string
+	head, r.URL.Path = shiftPath(r.URL.Path)
+
+	if head == "" {
+		handler := &shootHandler{
+			controller: sr.controller,
+			gameId:     sr.gameId,
+		}
+		handler.handle(p, r)
 	} else {
-		p.Error("Shoot action method not allowed", http.StatusMethodNotAllowed)
+		p.Error("Not implemented", http.StatusNotImplemented)
 	}
 }
 
-var shootMethods map[string]handleShoot = map[string]handleShoot{
-	"POST": postShoot,
+type shootHandler struct {
+	controller *controller.GamesController
+	gameId     string
+}
+
+func (sh *shootHandler) handle(p *presenter.RestApiPresenter, r *http.Request) {
+	switch r.Method {
+	case "POST":
+		sh.postShoot(p, r)
+	default:
+		p.Error("Shoot method not allowed", http.StatusMethodNotAllowed)
+	}
 }
 
 type shootBody struct {
@@ -37,13 +56,7 @@ type shootBody struct {
 	Col int `json:"col"`
 }
 
-type shootResponse struct {
-	Hit   bool         `json:"hit"`
-	Ships int          `json:"ships"`
-	Board entity.Board `json:"board"`
-}
-
-func postShoot(p *presenter.RestApiPresenter, r *http.Request, gameId string) {
+func (sh *shootHandler) postShoot(p *presenter.RestApiPresenter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		p.Error("Invalid body", http.StatusInternalServerError)
@@ -58,7 +71,7 @@ func postShoot(p *presenter.RestApiPresenter, r *http.Request, gameId string) {
 		return
 	}
 
-	// hit, ships, gameState := controller.Shoot(gameId, body.Row, body.Col)
+	sh.controller.Shoot(p, sh.gameId, body.Row, body.Col)
 	// shootRes := shootResponse{
 	// 	Hit:   hit,
 	// 	Ships: ships,

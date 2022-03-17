@@ -25,13 +25,15 @@ func (ac *gameActionsRouter) route(p *presenter.RestApiPresenter, r *http.Reques
 	var action string
 	action, r.URL.Path = shiftPath(r.URL.Path)
 
-	if router, exist := gameActionsSubRouter[action]; exist {
-		router(ac.gameId).route(p, r)
+	if router, exist := gameActionsSubRouters[action]; exist {
+		router(ac.controller, ac.gameId).route(p, r)
 	} else {
 		p.Error("Game action not implemented", http.StatusNotImplemented)
 	}
 }
 
-var gameActionsSubRouter map[string]func(string) router = map[string]func(string) router{
+type gameActionsSubRouter func(*controller.GamesController, string) router
+
+var gameActionsSubRouters map[string]gameActionsSubRouter = map[string]gameActionsSubRouter{
 	"shoot": newGameActionShootRouter,
 }
