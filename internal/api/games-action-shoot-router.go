@@ -72,14 +72,4 @@ func (sh *shootHandler) postShoot(p *presenter.RestApiPresenter, r *http.Request
 	}
 
 	sh.controller.Shoot(p, sh.gameId, body.Row, body.Col)
-	// shootRes := shootResponse{
-	// 	Hit:   hit,
-	// 	Ships: ships,
-	// 	Board: gameState.Board,
-	// }
-
-	// fmt.Println(gameState.Board.String())
-	// resData, _ := json.Marshal(shootRes)
-	// res.Header().Set("Content-Type", "application/json")
-	// res.Write(resData)
 }
