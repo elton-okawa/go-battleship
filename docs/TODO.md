@@ -3,10 +3,12 @@ By priority
 
 ### High
 * Better http responses
-* Use presenter to abstract `use_case` responses from `http responses`
+* Implement `presenter` for cli
 * Document (with images) current architecture
 
 ### Medium
+* Document api
+* Improve tests
 * Create player account
 * Games by player
 * Two player battleship game
@@ -18,3 +20,7 @@ By priority
 
 ## Fix
 * Random is always generating the same map
+
+## Take a look
+* Open api and router bindings generator
+* Google Wire dependency injection package

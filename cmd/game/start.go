@@ -5,6 +5,8 @@ import (
 )
 
 type Start struct {
+	persistence use_case.GameStatePersistence
+	presenter   use_case.GameOutputBoundary
 }
 
 func (s *Start) Description() string {
@@ -16,7 +18,8 @@ func (s *Start) Parse([]string) error {
 }
 
 func (s *Start) Execute() (bool, error) {
-	use_case.StartGame()
+	game := use_case.NewGame(s.persistence)
+	game.Start(s.presenter)
 
 	return false, nil
 }

@@ -3,13 +3,15 @@ package main
 import (
 	"elton-okawa/battleship/internal/use_case"
 	"errors"
-	"fmt"
 	"strconv"
 )
 
 type Shoot struct {
-	row int
-	col int
+	persistence use_case.GameStatePersistence
+	presenter   use_case.GameOutputBoundary
+	row         int
+	col         int
+	id          string
 }
 
 func (s *Shoot) Description() string {
@@ -17,20 +19,23 @@ func (s *Shoot) Description() string {
 }
 
 func (s *Shoot) Parse(args []string) error {
-	if len(args) != 2 {
-		return errors.New("shoot command must receive exactly 2 arguments")
+	if len(args) != 3 {
+		return errors.New("shoot command must receive exactly 3 arguments")
 	}
 
-	row, err := strconv.Atoi(args[0])
+	id := args[0]
+
+	row, err := strconv.Atoi(args[1])
 	if err != nil {
 		return errors.New("row must be a valid integer")
 	}
 
-	col, err := strconv.Atoi(args[1])
+	col, err := strconv.Atoi(args[2])
 	if err != nil {
 		return errors.New("col must be a valid integer")
 	}
 
+	s.id = id
 	s.row = row
 	s.col = col
 
@@ -38,18 +43,21 @@ func (s *Shoot) Parse(args []string) error {
 }
 
 func (s *Shoot) Execute() (bool, error) {
-	hit, ships, board, err := use_case.Shoot(s.row, s.col)
-	if err != nil {
-		return false, err
-	} else {
-		fmt.Println(board)
-		fmt.Printf("Your shot hit: %t\n", hit)
-		fmt.Printf("There is/are %d ships squares remaining\n", ships)
+	game := use_case.NewGame(s.persistence)
+	game.Shoot(s.presenter, s.id, s.row, s.col)
 
-		if ships == 0 {
-			fmt.Printf("Game finished, you can start another one\n")
-		}
+	return true, nil
+	// if err != nil {
+	// 	return false, err
+	// } else {
+	// 	fmt.Println(board)
+	// 	fmt.Printf("Your shot hit: %t\n", hit)
+	// 	fmt.Printf("There is/are %d ships squares remaining\n", ships)
 
-		return ships == 0, err
-	}
+	// 	if ships == 0 {
+	// 		fmt.Printf("Game finished, you can start another one\n")
+	// 	}
+
+	// 	return ships == 0, err
+	// }
 }
