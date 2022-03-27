@@ -23,11 +23,11 @@ go run ./cmd/game/*
 ## Testing
 
 ```
-go test ./**/* -v
+go test ./... -v
 ```
 
 ### Coverage
 ```
-go test ./**/* -coverprofile cover.out
+go test ./... -coverprofile cover.out
 go tool cover -html=cover.out -o cover.html
 ```
