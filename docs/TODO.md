@@ -3,7 +3,7 @@ By priority
 
 ### High
 * Better http responses
-* Use presenter to abstract `use_case` responses from `http responses`
+* Implement `presenter` for cli
 * Document (with images) current architecture
 
 ### Medium
