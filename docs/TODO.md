@@ -23,3 +23,4 @@ By priority
 
 ## Take a look
 * Open api and router bindings generator
+* Google Wire dependency injection package
