@@ -1,4 +1,4 @@
-package presenter
+package rest
 
 import (
 	"elton-okawa/battleship/internal/entity"
@@ -30,7 +30,13 @@ type shootResponse struct {
 }
 
 func (rp *RestApiPresenter) ShootResult(gs *use_case.GameState, hit bool, ships int, err error) {
-	// TODO handle error
+
+	if err != nil {
+		fmt.Printf("%v", err)
+		http.Error(rp.responseWriter, err.Error(), 400)
+		return
+	}
+
 	shootRes := shootResponse{
 		Hit:   hit,
 		Ships: ships,

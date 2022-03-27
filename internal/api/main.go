@@ -8,7 +8,7 @@ import (
 	"elton-okawa/battleship/internal/api/router"
 	"elton-okawa/battleship/internal/database"
 	"elton-okawa/battleship/internal/interface_adapter/controller"
-	"elton-okawa/battleship/internal/interface_adapter/presenter"
+	"elton-okawa/battleship/internal/interface_adapter/presenter/rest"
 	"elton-okawa/battleship/internal/use_case"
 	"net/http"
 )
@@ -37,7 +37,7 @@ func (app *App) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	var resource string
 	resource, r.URL.Path = router.ShiftPath(r.URL.Path)
 
-	presenter := presenter.NewRestApiPresenter(rw)
+	presenter := rest.NewRestApiPresenter(rw)
 	if router, exist := app.routers[resource]; exist {
 		router.Route(presenter, r)
 	} else {
