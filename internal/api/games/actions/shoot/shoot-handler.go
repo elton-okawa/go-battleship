@@ -1,4 +1,4 @@
-package api
+package shoot
 
 import (
 	"elton-okawa/battleship/internal/interface_adapter/controller"
@@ -7,33 +7,6 @@ import (
 	"io/ioutil"
 	"net/http"
 )
-
-type gameActionShootRouter struct {
-	gameId     string
-	controller *controller.GamesController
-}
-
-func newGameActionShootRouter(controller *controller.GamesController, gameId string) router {
-	return &gameActionShootRouter{
-		gameId:     gameId,
-		controller: controller,
-	}
-}
-
-func (sr *gameActionShootRouter) route(p *presenter.RestApiPresenter, r *http.Request) {
-	var head string
-	head, r.URL.Path = shiftPath(r.URL.Path)
-
-	if head == "" {
-		handler := &shootHandler{
-			controller: sr.controller,
-			gameId:     sr.gameId,
-		}
-		handler.handle(p, r)
-	} else {
-		p.Error("Not implemented", http.StatusNotImplemented)
-	}
-}
 
 type shootHandler struct {
 	controller *controller.GamesController
