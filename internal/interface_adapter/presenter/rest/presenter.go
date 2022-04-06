@@ -27,8 +27,12 @@ func NewRestApiPresenter(rw http.ResponseWriter) *RestApiPresenter {
 }
 
 func (rp *RestApiPresenter) StartResult(gs *use_case.GameState, err error) {
-	// TODO handle error
-	rp.responseWriter.Write([]byte(gs.Board.String()))
+	if err != nil {
+		rp.handleError(err)
+		return
+	}
+
+	rp.responseBody(http.StatusCreated, []byte(gs.Board.String()))
 }
 
 type shootResponse struct {
@@ -51,8 +55,18 @@ func (rp *RestApiPresenter) ShootResult(gs *use_case.GameState, hit bool, ships 
 
 	fmt.Println(gs.Board.String())
 	resData, _ := json.Marshal(shootRes)
+	rp.responseBody(http.StatusOK, resData)
+}
+
+func (rp *RestApiPresenter) responseBody(code int, data []byte) {
 	rp.responseWriter.Header().Set("Content-Type", "application/json")
-	rp.responseWriter.Write(resData)
+	rp.responseWriter.WriteHeader(code)
+	rp.responseWriter.Write(data)
+}
+
+func (rp *RestApiPresenter) response(code int) {
+	rp.responseWriter.Header().Set("Content-Type", "application/json")
+	rp.responseWriter.WriteHeader(code)
 }
 
 func (rp *RestApiPresenter) handleError(err error) {
