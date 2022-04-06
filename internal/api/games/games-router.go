@@ -4,7 +4,7 @@ import (
 	"elton-okawa/battleship/internal/api/games/actions"
 	"elton-okawa/battleship/internal/api/router"
 	"elton-okawa/battleship/internal/interface_adapter/controller"
-	"elton-okawa/battleship/internal/interface_adapter/presenter"
+	"elton-okawa/battleship/internal/interface_adapter/presenter/rest"
 	"net/http"
 )
 
@@ -18,7 +18,7 @@ type GamesRouter struct {
 	controller *controller.GamesController
 }
 
-func (g *GamesRouter) Route(p *presenter.RestApiPresenter, r *http.Request) {
+func (g *GamesRouter) Route(p *rest.RestApiPresenter, r *http.Request) {
 	var id string
 	id, r.URL.Path = router.ShiftPath(r.URL.Path)
 

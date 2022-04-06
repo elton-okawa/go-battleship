@@ -1,10 +1,10 @@
 package router
 
 import (
-	"elton-okawa/battleship/internal/interface_adapter/presenter"
+	"elton-okawa/battleship/internal/interface_adapter/presenter/rest"
 	"net/http"
 )
 
 type Router interface {
-	Route(*presenter.RestApiPresenter, *http.Request)
+	Route(*rest.RestApiPresenter, *http.Request)
 }

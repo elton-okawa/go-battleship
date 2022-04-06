@@ -4,7 +4,7 @@ import (
 	"elton-okawa/battleship/internal/api/games/actions/shoot"
 	"elton-okawa/battleship/internal/api/router"
 	"elton-okawa/battleship/internal/interface_adapter/controller"
-	"elton-okawa/battleship/internal/interface_adapter/presenter"
+	"elton-okawa/battleship/internal/interface_adapter/presenter/rest"
 	"net/http"
 )
 
@@ -23,7 +23,7 @@ func NewActionsRouter(
 	}
 }
 
-func (ac *actionsRouter) Route(p *presenter.RestApiPresenter, r *http.Request) {
+func (ac *actionsRouter) Route(p *rest.RestApiPresenter, r *http.Request) {
 	var action string
 	action, r.URL.Path = router.ShiftPath(r.URL.Path)
 

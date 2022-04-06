@@ -3,6 +3,7 @@ package use_case
 import (
 	"elton-okawa/battleship/internal/entity"
 	"errors"
+	"fmt"
 )
 
 type GameState struct {
@@ -45,7 +46,8 @@ func (g *Game) Start(gob GameOutputBoundary) {
 func (g *Game) Shoot(gob GameOutputBoundary, id string, row, col int) {
 	state, err := g.persistence.GetGameState(id)
 	if err != nil {
-		gob.ShootResult(nil, false, 0, err)
+		notFoundErr := NewError(fmt.Sprintf("Could not find game with id '%s'\n%v", id, err), ElementNotFound, nil)
+		gob.ShootResult(nil, false, 0, notFoundErr)
 		return
 	}
 
@@ -54,6 +56,7 @@ func (g *Game) Shoot(gob GameOutputBoundary, id string, row, col int) {
 		return
 	}
 
+	// TODO check if row and col are valid (not shot or inside board boundaries)
 	hit, ships := state.Board.Shoot(row, col)
 	if ships == 0 {
 		state.Finished = true
