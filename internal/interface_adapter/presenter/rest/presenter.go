@@ -4,9 +4,17 @@ import (
 	"elton-okawa/battleship/internal/entity"
 	"elton-okawa/battleship/internal/use_case"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 )
+
+type ProblemJson struct {
+	Title  string `json:"title"`
+	Status int    `json:"status"`
+	Detail string `json:"detail"`
+	// instance string
+}
 
 type RestApiPresenter struct {
 	responseWriter http.ResponseWriter
@@ -30,10 +38,8 @@ type shootResponse struct {
 }
 
 func (rp *RestApiPresenter) ShootResult(gs *use_case.GameState, hit bool, ships int, err error) {
-
 	if err != nil {
-		fmt.Printf("%v", err)
-		http.Error(rp.responseWriter, err.Error(), 400)
+		rp.handleError(err)
 		return
 	}
 
@@ -47,6 +53,33 @@ func (rp *RestApiPresenter) ShootResult(gs *use_case.GameState, hit bool, ships 
 	resData, _ := json.Marshal(shootRes)
 	rp.responseWriter.Header().Set("Content-Type", "application/json")
 	rp.responseWriter.Write(resData)
+}
+
+func (rp *RestApiPresenter) handleError(err error) {
+	var e *use_case.UseCaseError
+	var p ProblemJson
+	var c int
+	if errors.As(err, &e) {
+		httpError := CodeToHttp[e.Code]
+		c = httpError.code
+		p = ProblemJson{
+			Title:  httpError.title,
+			Status: c,
+			Detail: e.Message,
+		}
+	} else {
+		c = http.StatusInternalServerError
+		p = ProblemJson{
+			Title:  http.StatusText(c),
+			Status: c,
+			Detail: fmt.Sprintf("An unexpected error occurred: %v", err),
+		}
+	}
+
+	res, _ := json.Marshal(&p)
+	rp.responseWriter.Header().Set("Content-Type", "application/problem+json")
+	rp.responseWriter.WriteHeader(c)
+	rp.responseWriter.Write(res)
 }
 
 func (rp *RestApiPresenter) Error(message string, code int) {
