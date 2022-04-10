@@ -1,0 +1,51 @@
+package entity
+
+import "testing"
+
+func TestNewPlayerUniqueId(t *testing.T) {
+	playerOne, errOne := NewPlayer("secret")
+	playerTwo, errTwo := NewPlayer("password")
+
+	if errOne != nil || errTwo != nil {
+		t.Errorf("Error while creating new player one")
+	}
+
+	if playerOne.GetId() == playerTwo.GetId() {
+		t.Errorf("NewPlayer id must be unique")
+	}
+}
+
+func TestNewPlayerHashedPassword(t *testing.T) {
+	password := "secret"
+
+	player, _ := NewPlayer(password)
+
+	if player.passwordHash == password {
+		t.Error("We must not store plain password")
+	}
+}
+
+func TestNewPlayerSaltedPassword(t *testing.T) {
+	password := "secret"
+
+	playerOne, _ := NewPlayer(password)
+	playerTwo, _ := NewPlayer(password)
+
+	if playerOne.passwordHash == playerTwo.passwordHash {
+		t.Error("Players with same password have the same salted hashed password")
+	}
+}
+
+func TestPlayerAuthentication(t *testing.T) {
+	password := "secret"
+
+	player, _ := NewPlayer(password)
+
+	if player.Authenticate("another") == nil {
+		t.Error("Player must not be able to authenticate using other password")
+	}
+
+	if player.Authenticate(password) != nil {
+		t.Error("Player must be able to authenticate using created password")
+	}
+}
