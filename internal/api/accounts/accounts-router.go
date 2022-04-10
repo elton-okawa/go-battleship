@@ -22,9 +22,7 @@ func (a AccountsRouter) Route(p rest.RestApiPresenter, r *http.Request) {
 	id, r.URL.Path = router.ShiftPath(r.URL.Path)
 
 	if id == "" {
-		ah := accountsHandler{
-			controller: a.controller,
-		}
+		ah := newAccountsHandler(a.controller)
 		ah.handle(p, r)
 	} else {
 		var resource string
@@ -33,7 +31,7 @@ func (a AccountsRouter) Route(p rest.RestApiPresenter, r *http.Request) {
 		if router, exist := accountsSubRouters[resource]; exist {
 			router(a.controller, id).Route(p, r)
 		} else {
-			p.Error("Games resource not implemented", http.StatusNotImplemented)
+			p.Error("Accounts resource not implemented", http.StatusNotImplemented)
 		}
 	}
 }

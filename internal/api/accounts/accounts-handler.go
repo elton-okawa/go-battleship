@@ -12,12 +12,18 @@ type accountsHandler struct {
 	controller controller.AccountController
 }
 
+func newAccountsHandler(controller controller.AccountController) accountsHandler {
+	return accountsHandler{
+		controller: controller,
+	}
+}
+
 func (ah accountsHandler) handle(p rest.RestApiPresenter, r *http.Request) {
 	switch r.Method {
 	case "POST":
 		ah.postAccounts(p, r)
 	default:
-		p.Error("Games method not allowed", http.StatusMethodNotAllowed)
+		p.Error("Accounts method not allowed", http.StatusMethodNotAllowed)
 	}
 }
 
