@@ -11,7 +11,7 @@ type gamesHandler struct {
 	id         string
 }
 
-func (gh *gamesHandler) handle(p *rest.RestApiPresenter, r *http.Request) {
+func (gh *gamesHandler) handle(p rest.RestApiPresenter, r *http.Request) {
 	switch r.Method {
 	case "POST":
 		gh.postGames(p, r)
@@ -20,6 +20,6 @@ func (gh *gamesHandler) handle(p *rest.RestApiPresenter, r *http.Request) {
 	}
 }
 
-func (gh *gamesHandler) postGames(p *rest.RestApiPresenter, r *http.Request) {
+func (gh *gamesHandler) postGames(p rest.RestApiPresenter, r *http.Request) {
 	gh.controller.PostGame(p)
 }

@@ -13,7 +13,7 @@ type shootHandler struct {
 	gameId     string
 }
 
-func (sh *shootHandler) handle(p *rest.RestApiPresenter, r *http.Request) {
+func (sh *shootHandler) handle(p rest.RestApiPresenter, r *http.Request) {
 	switch r.Method {
 	case "POST":
 		sh.postShoot(p, r)
@@ -27,7 +27,7 @@ type shootBody struct {
 	Col int `json:"col"`
 }
 
-func (sh *shootHandler) postShoot(p *rest.RestApiPresenter, r *http.Request) {
+func (sh *shootHandler) postShoot(p rest.RestApiPresenter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		p.Error("Invalid body", http.StatusInternalServerError)

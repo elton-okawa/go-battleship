@@ -23,7 +23,7 @@ func NewActionsRouter(
 	}
 }
 
-func (ac *actionsRouter) Route(p *rest.RestApiPresenter, r *http.Request) {
+func (ac *actionsRouter) Route(p rest.RestApiPresenter, r *http.Request) {
 	var action string
 	action, r.URL.Path = router.ShiftPath(r.URL.Path)
 

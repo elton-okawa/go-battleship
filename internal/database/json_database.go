@@ -13,6 +13,12 @@ type JsonDatabase struct {
 	data     map[string]interface{}
 }
 
+func NewJsonDatabase(filepath string) JsonDatabase {
+	return JsonDatabase{
+		Filepath: filepath,
+	}
+}
+
 type Entity interface {
 	GetId() string
 	SetId(string)

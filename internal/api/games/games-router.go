@@ -18,7 +18,7 @@ type GamesRouter struct {
 	controller *controller.GamesController
 }
 
-func (g *GamesRouter) Route(p *rest.RestApiPresenter, r *http.Request) {
+func (g *GamesRouter) Route(p rest.RestApiPresenter, r *http.Request) {
 	var id string
 	id, r.URL.Path = router.ShiftPath(r.URL.Path)
 

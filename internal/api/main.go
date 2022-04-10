@@ -4,12 +4,14 @@
 package api
 
 import (
+	"elton-okawa/battleship/internal/api/accounts"
 	"elton-okawa/battleship/internal/api/games"
 	"elton-okawa/battleship/internal/api/router"
 	"elton-okawa/battleship/internal/database"
 	"elton-okawa/battleship/internal/interface_adapter/controller"
 	"elton-okawa/battleship/internal/interface_adapter/presenter/rest"
 	"elton-okawa/battleship/internal/use_case"
+	"elton-okawa/battleship/internal/use_case/account"
 	"net/http"
 )
 
@@ -26,9 +28,18 @@ func Init() *App {
 		gameHandler,
 	)
 
+	accountDao := database.NewAccountDao("./db/accounts.json")
+	accountsHandler := account.NewAccountUseCase(
+		accountDao,
+	)
+	accountsController := controller.NewAccountController(
+		accountsHandler,
+	)
+
 	return &App{
 		routers: map[string]router.Router{
-			"games": games.NewGamesRouter(gamesController),
+			"games":    games.NewGamesRouter(gamesController),
+			"accounts": accounts.NewAccountsRouter(accountsController),
 		},
 	}
 }
