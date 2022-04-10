@@ -20,7 +20,7 @@ func TestNewPlayerHashedPassword(t *testing.T) {
 
 	player, _ := NewPlayer("player", password)
 
-	if player.passwordHash == password {
+	if player.PasswordHash == password {
 		t.Error("We must not store plain password")
 	}
 }
@@ -31,7 +31,7 @@ func TestNewPlayerSaltedPassword(t *testing.T) {
 	playerOne, _ := NewPlayer("player-one", password)
 	playerTwo, _ := NewPlayer("player-two", password)
 
-	if playerOne.passwordHash == playerTwo.passwordHash {
+	if playerOne.PasswordHash == playerTwo.PasswordHash {
 		t.Error("Players with same password have the same salted hashed password")
 	}
 }

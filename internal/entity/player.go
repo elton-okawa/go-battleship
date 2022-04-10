@@ -8,10 +8,9 @@ import (
 type Player struct {
 	Id           string
 	Login        string
-	passwordHash string
+	PasswordHash string
 }
 
-// TODO we might want to impose some password restrictions like length, characters
 func NewPlayer(login, password string) (Player, error) {
 	saltedBytes := []byte(password)
 	hashedBytes, err := bcrypt.GenerateFromPassword(saltedBytes, bcrypt.DefaultCost)
@@ -22,7 +21,7 @@ func NewPlayer(login, password string) (Player, error) {
 	player := Player{
 		Id:           uuid.NewString(),
 		Login:        login,
-		passwordHash: string(hashedBytes),
+		PasswordHash: string(hashedBytes),
 	}
 
 	return player, nil
@@ -37,5 +36,5 @@ func (p *Player) SetId(id string) {
 }
 
 func (p *Player) Authenticate(password string) error {
-	return bcrypt.CompareHashAndPassword([]byte(p.passwordHash), []byte(password))
+	return bcrypt.CompareHashAndPassword([]byte(p.PasswordHash), []byte(password))
 }
