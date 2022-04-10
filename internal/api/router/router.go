@@ -6,5 +6,5 @@ import (
 )
 
 type Router interface {
-	Route(*rest.RestApiPresenter, *http.Request)
+	Route(rest.RestApiPresenter, *http.Request)
 }

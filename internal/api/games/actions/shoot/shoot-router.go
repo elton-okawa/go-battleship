@@ -19,7 +19,7 @@ func NewShootRouter(controller *controller.GamesController, gameId string) route
 	}
 }
 
-func (sr *shootRouter) Route(p *rest.RestApiPresenter, r *http.Request) {
+func (sr *shootRouter) Route(p rest.RestApiPresenter, r *http.Request) {
 	var head string
 	head, r.URL.Path = router.ShiftPath(r.URL.Path)
 

@@ -2,6 +2,7 @@ package use_case
 
 import (
 	"elton-okawa/battleship/internal/entity"
+	use_case_errors "elton-okawa/battleship/internal/use_case/errors"
 	"errors"
 	"fmt"
 )
@@ -46,7 +47,11 @@ func (g *Game) Start(gob GameOutputBoundary) {
 func (g *Game) Shoot(gob GameOutputBoundary, id string, row, col int) {
 	state, err := g.persistence.GetGameState(id)
 	if err != nil {
-		notFoundErr := NewError(fmt.Sprintf("Could not find game with id '%s'\n%v", id, err), ElementNotFound, nil)
+		notFoundErr := use_case_errors.NewError(
+			fmt.Sprintf("Could not find game with id '%s'\n%v", id, err),
+			use_case_errors.ElementNotFound,
+			nil,
+		)
 		gob.ShootResult(nil, false, 0, notFoundErr)
 		return
 	}

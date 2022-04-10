@@ -1,4 +1,4 @@
-package use_case
+package errors
 
 import "fmt"
 
@@ -8,19 +8,19 @@ type UseCaseError struct {
 	err     error
 }
 
-func NewError(m string, c int, err error) *UseCaseError {
-	return &UseCaseError{
+func NewError(m string, c int, err error) UseCaseError {
+	return UseCaseError{
 		Code:    c,
 		Message: m,
 		err:     err,
 	}
 }
 
-func (e *UseCaseError) Unwrap() error {
+func (e UseCaseError) Unwrap() error {
 	return e.err
 }
 
-func (e *UseCaseError) Error() string {
+func (e UseCaseError) Error() string {
 	if e.err != nil {
 		return fmt.Sprintf("[USE_CASE_ERROR: %d] %s\n%v", e.Code, e.Message, e.err)
 	} else {

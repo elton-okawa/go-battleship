@@ -1,7 +1,7 @@
 package rest
 
 import (
-	"elton-okawa/battleship/internal/use_case"
+	"elton-okawa/battleship/internal/use_case/errors"
 	"net/http"
 )
 
@@ -11,7 +11,7 @@ type HttpError struct {
 }
 
 var CodeToHttp = map[int]HttpError{
-	use_case.ElementNotFound: HttpError{
+	errors.ElementNotFound: HttpError{
 		title: http.StatusText(http.StatusNotFound),
 		code:  http.StatusNotFound,
 	},
