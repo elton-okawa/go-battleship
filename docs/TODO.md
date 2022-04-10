@@ -21,6 +21,12 @@ By priority
 ## Fix
 * Random is always generating the same map
 
+## Think about
+* ShiftPath router has a lot of boiler plate
+* Presenters and controllers are being passed down as pointers
+
 ## Take a look
-* Open api and router bindings generator
-* Google Wire dependency injection package
+Open api and router bindings generator
+* https://github.com/deepmap/oapi-codegen (better doc)
+* https://github.com/getkin/kin-openapi
+Google Wire dependency injection package
