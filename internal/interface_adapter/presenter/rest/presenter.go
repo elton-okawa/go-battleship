@@ -1,8 +1,7 @@
 package rest
 
 import (
-	"elton-okawa/battleship/internal/entity"
-	"elton-okawa/battleship/internal/use_case"
+	use_case_errors "elton-okawa/battleship/internal/use_case/errors"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -20,57 +19,25 @@ type RestApiPresenter struct {
 	responseWriter http.ResponseWriter
 }
 
-func NewRestApiPresenter(rw http.ResponseWriter) *RestApiPresenter {
-	return &RestApiPresenter{
+func NewRestApiPresenter(rw http.ResponseWriter) RestApiPresenter {
+	return RestApiPresenter{
 		responseWriter: rw,
 	}
 }
 
-func (rp *RestApiPresenter) StartResult(gs *use_case.GameState, err error) {
-	if err != nil {
-		rp.handleError(err)
-		return
-	}
-
-	rp.responseBody(http.StatusCreated, []byte(gs.Board.String()))
-}
-
-type shootResponse struct {
-	Hit   bool         `json:"hit"`
-	Ships int          `json:"ships"`
-	Board entity.Board `json:"board"`
-}
-
-func (rp *RestApiPresenter) ShootResult(gs *use_case.GameState, hit bool, ships int, err error) {
-	if err != nil {
-		rp.handleError(err)
-		return
-	}
-
-	shootRes := shootResponse{
-		Hit:   hit,
-		Ships: ships,
-		Board: gs.Board,
-	}
-
-	fmt.Println(gs.Board.String())
-	resData, _ := json.Marshal(shootRes)
-	rp.responseBody(http.StatusOK, resData)
-}
-
-func (rp *RestApiPresenter) responseBody(code int, data []byte) {
+func (rp RestApiPresenter) responseBody(code int, data []byte) {
 	rp.responseWriter.Header().Set("Content-Type", "application/json")
 	rp.responseWriter.WriteHeader(code)
 	rp.responseWriter.Write(data)
 }
 
-func (rp *RestApiPresenter) response(code int) {
+func (rp RestApiPresenter) response(code int) {
 	rp.responseWriter.Header().Set("Content-Type", "application/json")
 	rp.responseWriter.WriteHeader(code)
 }
 
-func (rp *RestApiPresenter) handleError(err error) {
-	var e *use_case.UseCaseError
+func (rp RestApiPresenter) handleError(err error) {
+	var e *use_case_errors.UseCaseError
 	var p ProblemJson
 	var c int
 	if errors.As(err, &e) {
