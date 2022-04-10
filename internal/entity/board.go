@@ -7,10 +7,10 @@ import (
 )
 
 type Board struct {
-	Placement [][]rune `json:"placement"`
-	State     [][]rune `json:"state"`
-	Size      int      `json:"size"`
-	ShipCount int      `json:"shipCount"`
+	Placement [][]rune
+	State     [][]rune
+	Size      int
+	ShipCount int
 }
 
 var EMPTY = '-'
@@ -18,9 +18,7 @@ var SINGLE_SQUARE_SHIP = 'S'
 var HIT = 'X'
 var MISS = '0'
 
-func Init() Board {
-	size := 8
-	shipCount := 3
+func NewBoard(size, shipCount int) *Board {
 	placement := emptyMap(size)
 	state := emptyMap(size)
 
@@ -35,7 +33,7 @@ func Init() Board {
 		placeShip(&board, SINGLE_SQUARE_SHIP, 1)
 	}
 
-	return board
+	return &board
 }
 
 func emptyMap(size int) [][]rune {

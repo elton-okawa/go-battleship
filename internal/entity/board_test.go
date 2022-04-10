@@ -4,8 +4,8 @@ import (
 	"testing"
 )
 
-func TestInitSize(t *testing.T) {
-	board := Init()
+func TestNewBoardSize(t *testing.T) {
+	board := NewBoard(8, 3)
 
 	placementCorrect := true
 
@@ -30,8 +30,8 @@ func TestInitSize(t *testing.T) {
 	}
 }
 
-func TestInitShipCount(t *testing.T) {
-	board := Init()
+func TestNewBoardShipCount(t *testing.T) {
+	board := NewBoard(8, 3)
 
 	count := 0
 
@@ -49,7 +49,7 @@ func TestInitShipCount(t *testing.T) {
 }
 
 func TestShootMiss(t *testing.T) {
-	board := Init()
+	board := NewBoard(8, 3)
 
 	initialShips := board.ShipCount
 	missRow := -1
@@ -88,7 +88,7 @@ func TestShootMiss(t *testing.T) {
 }
 
 func TestShootHit(t *testing.T) {
-	board := Init()
+	board := NewBoard(8, 3)
 
 	initialShips := board.ShipCount
 	hitRow := -1

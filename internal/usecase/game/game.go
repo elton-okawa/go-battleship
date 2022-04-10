@@ -33,7 +33,7 @@ type GameUseCase struct {
 
 func (g GameUseCase) Start(gob GameOutputBoundary) {
 	state := GameState{}
-	state.Board = entity.Init()
+	state.Board = entity.NewBoard()
 	state.Finished = false
 
 	if err := g.persistence.SaveGameState(&state); err != nil {
