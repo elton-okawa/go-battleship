@@ -29,4 +29,5 @@ By priority
 Open api and router bindings generator
 * https://github.com/deepmap/oapi-codegen (better doc)
 * https://github.com/getkin/kin-openapi
+* https://openapi.tools/ (reference)
 Google Wire dependency injection package
