@@ -10,12 +10,11 @@ import (
 func (b *BattleshipImpl) CreateAccount(ctx echo.Context) error {
 	restPresenter := rest.NewRestApiPresenter(ctx)
 
-	var postBody PostAccountsRequest
+	var postBody CreateAccountJSONBody
 	err := ctx.Bind(&postBody)
 	if err != nil {
 		restPresenter.SendError(
 			http.StatusBadRequest,
-			http.StatusText(http.StatusBadRequest),
 			"Invalid format for createAccount",
 		)
 		return restPresenter.Error()

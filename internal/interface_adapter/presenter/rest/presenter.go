@@ -60,9 +60,9 @@ func (rp *RestApiPresenter) handleError(err error) {
 	rp.err = rp.context.JSON(c, &p)
 }
 
-func (rp *RestApiPresenter) SendError(code int, title, message string) {
+func (rp *RestApiPresenter) SendError(code int, message string) {
 	p := ProblemJson{
-		Title:  title,
+		Title:  http.StatusText(code),
 		Status: code,
 		Detail: message,
 	}

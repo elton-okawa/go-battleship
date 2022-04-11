@@ -39,6 +39,30 @@ paths:
       responses:
         201:
           description: Created
+  /games/{id}/actions/shoot:
+    post:
+      tags: ["game"]
+      summary: Shoot
+      description: ""
+      operationId: "GameShoot"
+      parameters:
+        - in: path
+          name: id
+          description: Resource id
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostGameActionShootRequest"
+      responses:
+        200:
+          description: Ok
+
 components:
   schemas:
     PostAccountsRequest:
@@ -53,3 +77,13 @@ components:
         password:
           type: "string"
           minLength: 8
+    PostGameActionShootRequest:
+      type: object
+      required: [row, col]
+      properties:
+        row:
+          type: integer
+          minimum: 0
+        col:
+          type: integer
+          minimum: 0

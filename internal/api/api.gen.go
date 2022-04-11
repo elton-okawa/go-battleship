@@ -8,10 +8,12 @@ import (
 	"compress/gzip"
 	"encoding/base64"
 	"fmt"
+	"net/http"
 	"net/url"
 	"path"
 	"strings"
 
+	"github.com/deepmap/oapi-codegen/pkg/runtime"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/labstack/echo/v4"
 )
@@ -22,11 +24,23 @@ type PostAccountsRequest struct {
 	Password string `json:"password"`
 }
 
+// PostGameActionShootRequest defines model for PostGameActionShootRequest.
+type PostGameActionShootRequest struct {
+	Col int `json:"col"`
+	Row int `json:"row"`
+}
+
 // CreateAccountJSONBody defines parameters for CreateAccount.
 type CreateAccountJSONBody PostAccountsRequest
 
+// GameShootJSONBody defines parameters for GameShoot.
+type GameShootJSONBody PostGameActionShootRequest
+
 // CreateAccountJSONRequestBody defines body for CreateAccount for application/json ContentType.
 type CreateAccountJSONRequestBody CreateAccountJSONBody
+
+// GameShootJSONRequestBody defines body for GameShoot for application/json ContentType.
+type GameShootJSONRequestBody GameShootJSONBody
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
@@ -36,6 +50,9 @@ type ServerInterface interface {
 	// Start a new game
 	// (POST /games)
 	CreateGame(ctx echo.Context) error
+	// Shoot
+	// (POST /games/{id}/actions/shoot)
+	GameShoot(ctx echo.Context, id string) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -58,6 +75,22 @@ func (w *ServerInterfaceWrapper) CreateGame(ctx echo.Context) error {
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.CreateGame(ctx)
+	return err
+}
+
+// GameShoot converts echo context to params.
+func (w *ServerInterfaceWrapper) GameShoot(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "id" -------------
+	var id string
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "id", runtime.ParamLocationPath, ctx.Param("id"), &id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.GameShoot(ctx, id)
 	return err
 }
 
@@ -91,20 +124,23 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 
 	router.POST(baseURL+"/accounts", wrapper.CreateAccount)
 	router.POST(baseURL+"/games", wrapper.CreateGame)
+	router.POST(baseURL+"/games/:id/actions/shoot", wrapper.GameShoot)
 
 }
 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/4ySQW/bMAyF/4rB7WjETrEBg27rDkGBHYr1OOTAyoytwhZVkU4QFP7vg2Qn2ZIN640m",
-	"+KjH7/kNnlHoEbUDA9V+DSVYHgJ78ipg3kBsRwPm8pFFv1rLo1f5Qa8jiaZ2iBwoqqM81HPrfCoG57+T",
-	"b9PizyXoMRAYEI3OtzCVEFDkwLG5Gv1yMzqVEOl1dJEaMD+X/b/pt2cFP7+QVZiSpONkDnq22Oe6BOd3",
-	"nF5rSGx0QR17MPCkY3OEEtRpn5ZsuLhH1Z6kcwFK2FOUeXK9qld1ss6BPAYHBrIP7fLhFS5oMhOe2SQy",
-	"mF56aMDAt0iotCCE+S4SvefmmIYteyWfdRhC72xWVi/C/pJEqj5G2oGBD9UlqmrJqfpbSNOfEDWOlBsS",
-	"2Msc2129vmWz7Cls9t0UMlpLIrux748JxKe6vhU9+D32rimcD6Pm+GQcBozHM4ACC0+HAs8cFFtJ2Z46",
-	"26SqWhzovzA3OBC855Z5vLky9KQYdfHTzqtOZvLnNqPLbCl3O9Ug6Z+TA7YtRTBwt6ovsutnN/mIEnza",
-	"ZmC+aSr/QfoyeEIxbadfAQAA//9oepESowMAAA==",
+	"H4sIAAAAAAAC/7SUT2vcMBDFv4qZ9mhib2ih6Jb0EAKFhuRY9qDIs7ZSW1I0412Wxd+9jOz9E2+W5NKb",
+	"LGaent785B08a8IHzQ0oKNYLyMH4LniHjgnUDsg02Om0fPDEN8b43jE94muPxLIdog8Y2WIqan1tnSw6",
+	"636hq0X4ew68DQgKiKN1NQw5BE208bGalf44Kx1yiPja24gVqD+T/kn/8tDhn1/QsIiL0zvd4Y1h691T",
+	"4z1fNGx8O3mwXd+BKg961jHWGEUw+s1HRTOf0pEn8XODUtt4MQOtN7pN6xysW3k5pUIy0QaxDgqeuK+2",
+	"kANbbkXkzme3mrlFamyAHNYYaaxcXJVXpbj1AZ0OFhSkoLhJFy30NLuUgR+zkCS0nHRfgYKfETXjNGMY",
+	"L4TEt77ajlE5Rpf6dAitNamzeCHvjqjI6mvEFSj4UhxZKiaQivcoGt6mx7HHtEHBOxrHdF0uzrOZdDKT",
+	"fFcZ9cYg0apv260E8a0sz5vu3Vq3tsqsCz2nuVHfdTpuDwFkOnO4yfQhB9Y1yVD3O0vpKmrd4YdhCobw",
+	"mbuM5dXM0BPryJOfepTam0mfJ06Kna2GQifkqSCB/rI5sZXeRSIk6g4Zo8jObT0i+T4azGyVEAWViIIc",
+	"nJyvIO2/nV1+gsLJ216cv+3l/2Pswvv/FGrvUPP773wyU3rzcQzT7THtNsyB5BdAG13Lf0LB9VV5bJsf",
+	"c5eYOoQ7IjbkF8A/Fu7JHJbDvwAAAP//ExFHTtMFAAA=",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file
