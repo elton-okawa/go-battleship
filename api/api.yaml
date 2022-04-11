@@ -15,8 +15,7 @@ schemes:
 paths:
   /accounts:
     post:
-      tags:
-      - "account"
+      tags: ["account"]
       summary: "Create a new account"
       description: ""
       operationId: "CreateAccount"
@@ -27,8 +26,19 @@ paths:
             schema:
               $ref: '#/components/schemas/PostAccountsRequest'
       responses:
-        "405":
+        201:
+          description: Account created successfully
+        400:
           description: "Invalid input"
+  /games:
+    post:
+      tags: ["game"]
+      summary: "Start a new game"
+      description: ""
+      operationId: "CreateGame"
+      responses:
+        201:
+          description: Created
 components:
   schemas:
     PostAccountsRequest:

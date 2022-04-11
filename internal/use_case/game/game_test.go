@@ -1,4 +1,4 @@
-package use_case
+package game
 
 import (
 	"testing"

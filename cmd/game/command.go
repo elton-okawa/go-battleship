@@ -12,7 +12,7 @@ type Command interface {
 }
 
 var cmdPresenter = &presenter.CommandLinePresenter{}
-var cmdPersistence = &database.Database{}
+var cmdPersistence = &database.GameDao{}
 
 var Commands = map[string]Command{
 	"start": &Start{

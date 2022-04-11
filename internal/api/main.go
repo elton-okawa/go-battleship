@@ -4,6 +4,7 @@ import (
 	"elton-okawa/battleship/internal/database"
 	"elton-okawa/battleship/internal/interface_adapter/controller"
 	"elton-okawa/battleship/internal/use_case/account"
+	"elton-okawa/battleship/internal/use_case/game"
 	"fmt"
 	"os"
 
@@ -14,13 +15,16 @@ import (
 
 type BattleshipImpl struct {
 	accounts controller.AccountController
+	games    *controller.GamesController
 }
 
 func SetupHandler() *echo.Echo {
 	accountDao := database.NewAccountDao("./db/accounts.json")
+	gameDao := database.NewGameDao("./db/games.json")
 
 	app := BattleshipImpl{
 		accounts: controller.NewAccountController(account.NewAccountUseCase(accountDao)),
+		games:    controller.NewGamesController(game.NewGameUseCase(gameDao)),
 	}
 
 	swagger, err := GetSwagger()

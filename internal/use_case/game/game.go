@@ -1,4 +1,4 @@
-package use_case
+package game
 
 import (
 	"elton-okawa/battleship/internal/entity"
@@ -21,7 +21,7 @@ func (gs *GameState) SetId(id string) {
 	gs.Id = id
 }
 
-func NewGame(gsp GameStatePersistence) *Game {
+func NewGameUseCase(gsp GameStatePersistence) *Game {
 	return &Game{
 		persistence: gsp,
 	}

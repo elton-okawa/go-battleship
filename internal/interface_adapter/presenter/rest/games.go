@@ -2,7 +2,7 @@ package rest
 
 import (
 	"elton-okawa/battleship/internal/entity"
-	"elton-okawa/battleship/internal/use_case"
+	"elton-okawa/battleship/internal/use_case/game"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -14,16 +14,17 @@ type shootResponse struct {
 	Board entity.Board `json:"board"`
 }
 
-func (rp RestApiPresenter) StartResult(gs *use_case.GameState, err error) {
+func (rp RestApiPresenter) StartResult(gs *game.GameState, err error) {
 	if err != nil {
 		rp.handleError(err)
 		return
 	}
 
-	rp.responseBody(http.StatusCreated, []byte(gs.Board.String()))
+	// TODO map to a real response
+	rp.responseBody(http.StatusCreated, gs.Board.String())
 }
 
-func (rp RestApiPresenter) ShootResult(gs *use_case.GameState, hit bool, ships int, err error) {
+func (rp RestApiPresenter) ShootResult(gs *game.GameState, hit bool, ships int, err error) {
 	if err != nil {
 		rp.handleError(err)
 		return

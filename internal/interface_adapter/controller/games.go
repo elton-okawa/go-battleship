@@ -1,28 +1,28 @@
 package controller
 
 import (
-	"elton-okawa/battleship/internal/use_case"
+	"elton-okawa/battleship/internal/use_case/game"
 	"fmt"
 )
 
-func NewGamesController(g *use_case.Game) *GamesController {
+func NewGamesController(g *game.Game) *GamesController {
 	return &GamesController{
 		game: g,
 	}
 }
 
 type GamesController struct {
-	game *use_case.Game
+	game *game.Game
 }
 
 func (gc *GamesController) GetGame(id string) {
 	fmt.Println("Get games")
 }
 
-func (gc *GamesController) PostGame(p use_case.GameOutputBoundary) {
+func (gc *GamesController) PostGame(p game.GameOutputBoundary) {
 	gc.game.Start(p)
 }
 
-func (gc *GamesController) Shoot(p use_case.GameOutputBoundary, id string, row int, col int) {
+func (gc *GamesController) Shoot(p game.GameOutputBoundary, id string, row int, col int) {
 	gc.game.Shoot(p, id, row, col)
 }
