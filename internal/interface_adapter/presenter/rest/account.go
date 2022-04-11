@@ -2,7 +2,6 @@ package rest
 
 import (
 	"elton-okawa/battleship/internal/entity"
-	"encoding/json"
 	"net/http"
 )
 
@@ -22,6 +21,5 @@ func (rp RestApiPresenter) CreateAccountResponse(p entity.Player, err error) {
 		Login: p.Login,
 	}
 
-	body, _ := json.Marshal(res)
-	rp.responseBody(http.StatusCreated, body)
+	rp.responseBody(http.StatusCreated, res)
 }

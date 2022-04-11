@@ -2,10 +2,11 @@ package rest
 
 import (
 	use_case_errors "elton-okawa/battleship/internal/use_case/errors"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
+
+	"github.com/labstack/echo/v4"
 )
 
 type ProblemJson struct {
@@ -16,27 +17,25 @@ type ProblemJson struct {
 }
 
 type RestApiPresenter struct {
-	responseWriter http.ResponseWriter
+	context echo.Context
+	err     error
 }
 
-func NewRestApiPresenter(rw http.ResponseWriter) RestApiPresenter {
-	return RestApiPresenter{
-		responseWriter: rw,
+func NewRestApiPresenter(ctx echo.Context) *RestApiPresenter {
+	return &RestApiPresenter{
+		context: ctx,
 	}
 }
 
-func (rp RestApiPresenter) responseBody(code int, data []byte) {
-	rp.responseWriter.Header().Set("Content-Type", "application/json")
-	rp.responseWriter.WriteHeader(code)
-	rp.responseWriter.Write(data)
+func (rp *RestApiPresenter) responseBody(code int, data interface{}) {
+	rp.err = rp.context.JSON(code, data)
 }
 
-func (rp RestApiPresenter) response(code int) {
-	rp.responseWriter.Header().Set("Content-Type", "application/json")
-	rp.responseWriter.WriteHeader(code)
+func (rp *RestApiPresenter) response(code int) {
+	rp.err = rp.context.NoContent(code)
 }
 
-func (rp RestApiPresenter) handleError(err error) {
+func (rp *RestApiPresenter) handleError(err error) {
 	var e *use_case_errors.UseCaseError
 	var p ProblemJson
 	var c int
@@ -57,12 +56,21 @@ func (rp RestApiPresenter) handleError(err error) {
 		}
 	}
 
-	res, _ := json.Marshal(&p)
-	rp.responseWriter.Header().Set("Content-Type", "application/problem+json")
-	rp.responseWriter.WriteHeader(c)
-	rp.responseWriter.Write(res)
+	rp.context.Response().Header().Set("Content-Type", "application/problem+json")
+	rp.err = rp.context.JSON(c, &p)
 }
 
-func (rp *RestApiPresenter) Error(message string, code int) {
-	http.Error(rp.responseWriter, message, code)
+func (rp *RestApiPresenter) SendError(code int, title, message string) {
+	p := ProblemJson{
+		Title:  title,
+		Status: code,
+		Detail: message,
+	}
+
+	rp.context.Response().Header().Set("Content-Type", "application/problem+json")
+	rp.err = rp.context.JSON(code, &p)
+}
+
+func (rp *RestApiPresenter) Error() error {
+	return rp.err
 }

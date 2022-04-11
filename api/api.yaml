@@ -20,17 +20,12 @@ paths:
       summary: "Create a new account"
       description: ""
       operationId: "CreateAccount"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "Body"
+      requestBody:
         required: true
-        schema:
-          $ref: "#/components/schemas/PostAccountsRequest"
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostAccountsRequest'
       responses:
         "405":
           description: "Invalid input"
