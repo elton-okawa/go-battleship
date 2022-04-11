@@ -1,4 +1,4 @@
-package use_case
+package game
 
 type GameStatePersistence interface {
 	SaveGameState(gs *GameState) error

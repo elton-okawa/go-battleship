@@ -1,0 +1,89 @@
+swagger: "2.0"
+info:
+  description: "Study"
+  version: "1.0.0"
+  title: "Go Battleship"
+host: "localhost"
+basePath: "/v1"
+tags:
+- name: "games"
+  description: "Games"
+- name: "account"
+  description: "Account"
+schemes:
+- "https"
+paths:
+  /accounts:
+    post:
+      tags: ["account"]
+      summary: "Create a new account"
+      description: ""
+      operationId: "CreateAccount"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostAccountsRequest'
+      responses:
+        201:
+          description: Account created successfully
+        400:
+          description: "Invalid input"
+  /games:
+    post:
+      tags: ["game"]
+      summary: "Start a new game"
+      description: ""
+      operationId: "CreateGame"
+      responses:
+        201:
+          description: Created
+  /games/{id}/actions/shoot:
+    post:
+      tags: ["game"]
+      summary: Shoot
+      description: ""
+      operationId: "GameShoot"
+      parameters:
+        - in: path
+          name: id
+          description: Resource id
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostGameActionShootRequest"
+      responses:
+        200:
+          description: Ok
+
+components:
+  schemas:
+    PostAccountsRequest:
+      type: "object"
+      required:
+      - "login"
+      - "password"
+      properties:
+        login:
+          type: "string"
+          minLength: 5
+        password:
+          type: "string"
+          minLength: 8
+    PostGameActionShootRequest:
+      type: object
+      required: [row, col]
+      properties:
+        row:
+          type: integer
+          minimum: 0
+        col:
+          type: integer
+          minimum: 0

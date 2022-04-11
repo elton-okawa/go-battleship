@@ -1,14 +1,15 @@
 package main
 
 import (
-	"elton-okawa/battleship/internal/api"
+	Api "elton-okawa/battleship/internal/api"
 	"fmt"
-	"log"
-	"net/http"
 )
 
+var address = "localhost:8080"
+
 func main() {
-	fmt.Println("Server listening to :8080")
-	app := api.Init()
-	log.Fatal(http.ListenAndServe(":8080", app))
+	fmt.Printf("Server listening to %s\n", address)
+	app := Api.SetupHandler()
+
+	app.Logger.Fatal(app.Start(address))
 }
