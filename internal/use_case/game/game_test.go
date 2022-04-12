@@ -26,7 +26,7 @@ func (mo *MockOutput) ShootResult(*GameState, bool, int, error) {
 }
 
 func TestStartGame(t *testing.T) {
-	game := Game{
+	game := GameUseCase{
 		persistence: &MockPersistence{},
 	}
 	game.Start(&MockOutput{})
