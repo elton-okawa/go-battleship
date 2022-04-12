@@ -5,36 +5,36 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type Player struct {
+type Account struct {
 	Id           string
 	Login        string
 	PasswordHash string
 }
 
-func NewPlayer(login, password string) (Player, error) {
+func NewAccount(login, password string) (Account, error) {
 	saltedBytes := []byte(password)
 	hashedBytes, err := bcrypt.GenerateFromPassword(saltedBytes, bcrypt.DefaultCost)
 	if err != nil {
-		return Player{}, err
+		return Account{}, err
 	}
 
-	player := Player{
+	acc := Account{
 		Id:           uuid.NewString(),
 		Login:        login,
 		PasswordHash: string(hashedBytes),
 	}
 
-	return player, nil
+	return acc, nil
 }
 
-func (p *Player) GetId() string {
+func (p *Account) GetId() string {
 	return p.Id
 }
 
-func (p *Player) SetId(id string) {
+func (p *Account) SetId(id string) {
 	p.Id = id
 }
 
-func (p *Player) Authenticate(password string) error {
+func (p *Account) Authenticate(password string) error {
 	return bcrypt.CompareHashAndPassword([]byte(p.PasswordHash), []byte(password))
 }
