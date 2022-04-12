@@ -28,7 +28,7 @@ func NewAccountDao(filepath string) AccountDao {
 	}
 }
 
-func (db AccountDao) SavePlayer(e entity.Player) error {
+func (db AccountDao) SaveAccount(e entity.Account) error {
 	account := AccountModel{
 		Id:           e.Id,
 		Login:        e.Login,

@@ -5,24 +5,24 @@ import (
 	"fmt"
 )
 
-func NewGamesController(g *game.Game) *GamesController {
-	return &GamesController{
-		game: g,
+func NewGamesController(g game.GameUseCase) GamesController {
+	return GamesController{
+		useCase: g,
 	}
 }
 
 type GamesController struct {
-	game *game.Game
+	useCase game.GameUseCase
 }
 
-func (gc *GamesController) GetGame(id string) {
+func (gc GamesController) GetGame(id string) {
 	fmt.Println("Get games")
 }
 
-func (gc *GamesController) PostGame(p game.GameOutputBoundary) {
-	gc.game.Start(p)
+func (gc GamesController) PostGame(p game.GameOutputBoundary) {
+	gc.useCase.Start(p)
 }
 
-func (gc *GamesController) Shoot(p game.GameOutputBoundary, id string, row int, col int) {
-	gc.game.Shoot(p, id, row, col)
+func (gc GamesController) Shoot(p game.GameOutputBoundary, id string, row int, col int) {
+	gc.useCase.Shoot(p, id, row, col)
 }

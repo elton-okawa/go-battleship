@@ -7,11 +7,11 @@ import (
 )
 
 type AccountPersistence interface {
-	SavePlayer(entity.Player) error
+	SaveAccount(entity.Account) error
 }
 
 type AccountOutput interface {
-	CreateAccountResponse(entity.Player, error)
+	CreateAccountResponse(entity.Account, error)
 }
 
 type AccountUseCase struct {
@@ -24,9 +24,8 @@ func NewAccountUseCase(persistence AccountPersistence) AccountUseCase {
 	}
 }
 
-// TODO we might want to impose some password restrictions like length, characters
 func (a AccountUseCase) CreateAccount(res AccountOutput, login, password string) {
-	player, err := entity.NewPlayer(login, password)
+	acc, err := entity.NewAccount(login, password)
 
 	if err != nil {
 		useCaseError := errors.NewError(
@@ -35,20 +34,20 @@ func (a AccountUseCase) CreateAccount(res AccountOutput, login, password string)
 			err,
 		)
 
-		res.CreateAccountResponse(player, useCaseError)
+		res.CreateAccountResponse(acc, useCaseError)
 		return
 	}
 
-	if a.persistence.SavePlayer(player) != nil {
+	if a.persistence.SaveAccount(acc) != nil {
 		useCaseError := errors.NewError(
 			fmt.Sprintf("Failed to save a new account for '%s'", login),
 			errors.CreateAccountError,
 			err,
 		)
 
-		res.CreateAccountResponse(player, useCaseError)
+		res.CreateAccountResponse(acc, useCaseError)
 		return
 	}
 
-	res.CreateAccountResponse(player, nil)
+	res.CreateAccountResponse(acc, nil)
 }

@@ -10,15 +10,15 @@ type newAccountResponse struct {
 	Login string `json:"login"`
 }
 
-func (rp RestApiPresenter) CreateAccountResponse(p entity.Player, err error) {
+func (rp RestApiPresenter) CreateAccountResponse(e entity.Account, err error) {
 	if err != nil {
 		rp.handleError(err)
 		return
 	}
 
 	res := newAccountResponse{
-		Id:    p.Id,
-		Login: p.Login,
+		Id:    e.Id,
+		Login: e.Login,
 	}
 
 	rp.responseBody(http.StatusCreated, res)

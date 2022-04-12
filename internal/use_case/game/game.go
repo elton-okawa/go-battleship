@@ -21,17 +21,17 @@ func (gs *GameState) SetId(id string) {
 	gs.Id = id
 }
 
-func NewGameUseCase(gsp GameStatePersistence) *Game {
-	return &Game{
+func NewGameUseCase(gsp GameStatePersistence) GameUseCase {
+	return GameUseCase{
 		persistence: gsp,
 	}
 }
 
-type Game struct {
+type GameUseCase struct {
 	persistence GameStatePersistence
 }
 
-func (g *Game) Start(gob GameOutputBoundary) {
+func (g GameUseCase) Start(gob GameOutputBoundary) {
 	state := GameState{}
 	state.Board = entity.Init()
 	state.Finished = false
@@ -44,7 +44,7 @@ func (g *Game) Start(gob GameOutputBoundary) {
 }
 
 // Receives game id and row/col to shoot
-func (g *Game) Shoot(gob GameOutputBoundary, id string, row, col int) {
+func (g GameUseCase) Shoot(gob GameOutputBoundary, id string, row, col int) {
 	state, err := g.persistence.GetGameState(id)
 	if err != nil {
 		notFoundErr := use_case_errors.NewError(
@@ -57,7 +57,7 @@ func (g *Game) Shoot(gob GameOutputBoundary, id string, row, col int) {
 	}
 
 	if state.Finished {
-		gob.ShootResult(nil, false, 0, errors.New("Game finished"))
+		gob.ShootResult(nil, false, 0, errors.New("game finished"))
 		return
 	}
 

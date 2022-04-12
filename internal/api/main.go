@@ -15,7 +15,7 @@ import (
 
 type BattleshipImpl struct {
 	accounts controller.AccountController
-	games    *controller.GamesController
+	games    controller.GamesController
 }
 
 func SetupHandler() *echo.Echo {

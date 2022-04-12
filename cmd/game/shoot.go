@@ -1,14 +1,14 @@
 package main
 
 import (
-	"elton-okawa/battleship/internal/use_case"
+	"elton-okawa/battleship/internal/use_case/game"
 	"errors"
 	"strconv"
 )
 
 type Shoot struct {
-	persistence use_case.GameStatePersistence
-	presenter   use_case.GameOutputBoundary
+	persistence game.GameStatePersistence
+	presenter   game.GameOutputBoundary
 	row         int
 	col         int
 	id          string
@@ -43,7 +43,7 @@ func (s *Shoot) Parse(args []string) error {
 }
 
 func (s *Shoot) Execute() (bool, error) {
-	game := use_case.NewGame(s.persistence)
+	game := game.NewGameUseCase(s.persistence)
 	game.Shoot(s.presenter, s.id, s.row, s.col)
 
 	return true, nil
