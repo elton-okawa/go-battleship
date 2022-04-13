@@ -37,3 +37,16 @@ func (db AccountDao) SaveAccount(e entity.Account) error {
 
 	return db.driver.Save(&account)
 }
+
+func (db AccountDao) GetAccount(login string) (entity.Account, error) {
+	var model AccountModel
+	err := db.driver.FindFirstBy("login", login, &model)
+
+	acc := entity.Account{
+		Id:           model.Id,
+		Login:        model.Login,
+		PasswordHash: model.PasswordHash,
+	}
+
+	return acc, err
+}
