@@ -1,6 +1,8 @@
 package errors
 
 const (
-	ElementNotFound    = 0
-	CreateAccountError = 1
+	GenericError    = 0 // errors which user does not have any action
+	ElementNotFound = 1
+
+	IncorrectPassword = 100
 )

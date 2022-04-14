@@ -11,8 +11,17 @@ type HttpError struct {
 }
 
 var CodeToHttp = map[int]HttpError{
-	errors.ElementNotFound: HttpError{
+	errors.GenericError: {
+		title: http.StatusText(http.StatusInternalServerError),
+		code:  http.StatusInternalServerError,
+	},
+	errors.ElementNotFound: {
 		title: http.StatusText(http.StatusNotFound),
 		code:  http.StatusNotFound,
+	},
+
+	errors.IncorrectPassword: {
+		title: http.StatusText(http.StatusUnauthorized),
+		code:  http.StatusUnauthorized,
 	},
 }

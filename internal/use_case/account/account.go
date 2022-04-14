@@ -8,10 +8,12 @@ import (
 
 type AccountPersistence interface {
 	SaveAccount(entity.Account) error
+	GetAccount(login string) (entity.Account, error)
 }
 
 type AccountOutput interface {
 	CreateAccountResponse(entity.Account, error)
+	LoginResponse(entity.Account, string, int64, error)
 }
 
 type AccountUseCase struct {
@@ -30,24 +32,60 @@ func (a AccountUseCase) CreateAccount(res AccountOutput, login, password string)
 	if err != nil {
 		useCaseError := errors.NewError(
 			fmt.Sprintf("Failed to create a new account for '%s'", login),
-			errors.CreateAccountError,
+			errors.GenericError,
 			err,
 		)
 
-		res.CreateAccountResponse(acc, useCaseError)
+		res.CreateAccountResponse(entity.Account{}, useCaseError)
 		return
 	}
 
 	if a.persistence.SaveAccount(acc) != nil {
 		useCaseError := errors.NewError(
 			fmt.Sprintf("Failed to save a new account for '%s'", login),
-			errors.CreateAccountError,
+			errors.GenericError,
 			err,
 		)
 
-		res.CreateAccountResponse(acc, useCaseError)
+		res.CreateAccountResponse(entity.Account{}, useCaseError)
 		return
 	}
 
 	res.CreateAccountResponse(acc, nil)
+}
+
+func (a AccountUseCase) Login(res AccountOutput, login, password string) {
+	acc, err := a.persistence.GetAccount(login)
+
+	if err != nil {
+		useCaseError := errors.NewError(
+			fmt.Sprintf("Account '%s' not found", login),
+			errors.ElementNotFound,
+			err,
+		)
+		res.LoginResponse(entity.Account{}, "", 0, useCaseError)
+		return
+	}
+
+	if err = acc.Authenticate(password); err != nil {
+		useCaseError := errors.NewError(
+			"Incorrect password",
+			errors.IncorrectPassword,
+			err,
+		)
+
+		res.LoginResponse(entity.Account{}, "", 0, useCaseError)
+		return
+	}
+
+	if token, expires, err := entity.NewJwtToken(login); err == nil {
+		res.LoginResponse(acc, token, expires, err)
+	} else {
+		useCaseError := errors.NewError(
+			"Error while creating JWT Token",
+			errors.GenericError,
+			err,
+		)
+		res.LoginResponse(entity.Account{}, "", 0, useCaseError)
+	}
 }

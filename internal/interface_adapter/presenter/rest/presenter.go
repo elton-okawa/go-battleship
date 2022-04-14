@@ -10,9 +10,10 @@ import (
 )
 
 type ProblemJson struct {
-	Title  string `json:"title"`
-	Status int    `json:"status"`
-	Detail string `json:"detail"`
+	Title      string `json:"title"`
+	Status     int    `json:"status"`
+	Detail     string `json:"detail"`
+	Stacktrace string `json:"stack,omitempty"`
 	// instance string
 }
 
@@ -39,6 +40,7 @@ func (rp *RestApiPresenter) handleError(err error) {
 	var e *use_case_errors.UseCaseError
 	var p ProblemJson
 	var c int
+
 	if errors.As(err, &e) {
 		httpError := CodeToHttp[e.Code]
 		c = httpError.code

@@ -15,3 +15,7 @@ func NewAccountController(a account.AccountUseCase) AccountController {
 func (c AccountController) CreateAccount(res account.AccountOutput, login, password string) {
 	c.useCase.CreateAccount(res, login, password)
 }
+
+func (c AccountController) Login(res account.AccountOutput, login, password string) {
+	c.useCase.Login(res, login, password)
+}
