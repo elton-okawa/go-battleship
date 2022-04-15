@@ -61,7 +61,7 @@ func (a UseCase) Login(res Output, login, password string) {
 	if err != nil {
 		useCaseError := ucerror.New(
 			fmt.Sprintf("Account '%s' not found", login),
-			ucerror.ElementNotFound,
+			ucerror.IncorrectUsername,
 			err,
 		)
 		res.LoginResponse(account.Account{}, "", 0, useCaseError)
@@ -72,7 +72,7 @@ func (a UseCase) Login(res Output, login, password string) {
 		useCaseError := ucerror.New(
 			"Incorrect password",
 			ucerror.IncorrectPassword,
-			nil,
+			err,
 		)
 
 		res.LoginResponse(account.Account{}, "", 0, useCaseError)

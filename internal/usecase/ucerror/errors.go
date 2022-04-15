@@ -21,9 +21,9 @@ func (e *Error) Unwrap() error {
 }
 
 func (e *Error) Error() string {
-	if e.err != nil {
-		return fmt.Sprintf("[USE_CASE_ERROR: %d] %s\n%v", e.Code, e.Message, e.err)
-	} else {
-		return fmt.Sprintf("[USE_CASE_ERROR: %d] %s", e.Code, e.Message)
-	}
+	return fmt.Sprintf("[USE_CASE_ERROR: %d] %s", e.Code, e.Message)
+}
+
+func (e *Error) Debug() string {
+	return fmt.Sprintf("[USE_CASE_ERROR: %d] %s\n%v", e.Code, e.Message, e.err)
 }

@@ -6,8 +6,9 @@ import (
 )
 
 type HttpError struct {
-	title string
-	code  int
+	title   string
+	code    int
+	message string
 }
 
 var CodeToHttp = map[int]HttpError{
@@ -20,8 +21,14 @@ var CodeToHttp = map[int]HttpError{
 		code:  http.StatusNotFound,
 	},
 
+	ucerror.IncorrectUsername: {
+		title:   http.StatusText(http.StatusUnauthorized),
+		code:    http.StatusUnauthorized,
+		message: "Incorrect username or password",
+	},
 	ucerror.IncorrectPassword: {
-		title: http.StatusText(http.StatusUnauthorized),
-		code:  http.StatusUnauthorized,
+		title:   http.StatusText(http.StatusUnauthorized),
+		code:    http.StatusUnauthorized,
+		message: "Incorrect username or password",
 	},
 }

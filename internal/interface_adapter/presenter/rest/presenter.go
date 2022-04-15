@@ -44,10 +44,17 @@ func (rp *RestApiPresenter) handleError(err error) {
 	if errors.As(err, &e) {
 		httpError := CodeToHttp[e.Code]
 		c = httpError.code
+
+		// overwrite usecase message if necessary
+		msg := httpError.message
+		if msg == "" {
+			msg = e.Message
+		}
+
 		p = ProblemJson{
 			Title:  httpError.title,
 			Status: c,
-			Detail: e.Message,
+			Detail: msg,
 		}
 	} else {
 		c = http.StatusInternalServerError
