@@ -8,7 +8,7 @@ import (
 )
 
 func (b *BattleshipImpl) CreateAccount(ctx echo.Context) error {
-	restPresenter := rest.NewRestApiPresenter(ctx)
+	restPresenter := rest.New(ctx)
 
 	var postBody CreateAccountJSONBody
 	err := ctx.Bind(&postBody)
@@ -25,7 +25,7 @@ func (b *BattleshipImpl) CreateAccount(ctx echo.Context) error {
 }
 
 func (b *BattleshipImpl) AccountLogin(ctx echo.Context) error {
-	restPresenter := rest.NewRestApiPresenter(ctx)
+	restPresenter := rest.New(ctx)
 
 	var postBody AccountLoginJSONBody
 	if err := ctx.Bind(&postBody); err != nil {

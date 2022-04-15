@@ -22,7 +22,7 @@ type RestApiPresenter struct {
 	err     error
 }
 
-func NewRestApiPresenter(ctx echo.Context) *RestApiPresenter {
+func New(ctx echo.Context) *RestApiPresenter {
 	return &RestApiPresenter{
 		context: ctx,
 	}
