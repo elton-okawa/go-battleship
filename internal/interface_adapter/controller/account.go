@@ -1,6 +1,6 @@
 package controller
 
-import "elton-okawa/battleship/internal/use_case/account"
+import "elton-okawa/battleship/internal/usecase/account"
 
 type AccountController struct {
 	useCase account.AccountUseCase

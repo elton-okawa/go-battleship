@@ -3,8 +3,8 @@ package Api
 import (
 	"elton-okawa/battleship/internal/database"
 	"elton-okawa/battleship/internal/interface_adapter/controller"
-	"elton-okawa/battleship/internal/use_case/account"
-	"elton-okawa/battleship/internal/use_case/game"
+	"elton-okawa/battleship/internal/usecase/account"
+	"elton-okawa/battleship/internal/usecase/game"
 	"fmt"
 	"os"
 

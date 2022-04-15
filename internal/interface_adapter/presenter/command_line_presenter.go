@@ -1,7 +1,7 @@
 package presenter
 
 import (
-	"elton-okawa/battleship/internal/use_case/game"
+	"elton-okawa/battleship/internal/ucerror/game"
 )
 
 type CommandLinePresenter struct {

@@ -1,7 +1,7 @@
 package rest
 
 import (
-	"elton-okawa/battleship/internal/use_case/errors"
+	"elton-okawa/battleship/internal/usecase/ucerror"
 	"net/http"
 )
 
@@ -11,16 +11,16 @@ type HttpError struct {
 }
 
 var CodeToHttp = map[int]HttpError{
-	errors.GenericError: {
+	ucerror.GenericError: {
 		title: http.StatusText(http.StatusInternalServerError),
 		code:  http.StatusInternalServerError,
 	},
-	errors.ElementNotFound: {
+	ucerror.ElementNotFound: {
 		title: http.StatusText(http.StatusNotFound),
 		code:  http.StatusNotFound,
 	},
 
-	errors.IncorrectPassword: {
+	ucerror.IncorrectPassword: {
 		title: http.StatusText(http.StatusUnauthorized),
 		code:  http.StatusUnauthorized,
 	},

@@ -37,7 +37,7 @@ func main() {
 	}
 
 	if debugCommand.Parsed() {
-		// use_case.StartGame()
+		// ucerror.StartGame()
 	} else if databaseCommand.Parsed() {
 		handleDbCommand(*operationPtr, *idPtr, *fieldPtr)
 	}

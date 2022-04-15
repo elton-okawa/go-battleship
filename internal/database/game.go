@@ -1,6 +1,6 @@
 package database
 
-import "elton-okawa/battleship/internal/use_case/game"
+import "elton-okawa/battleship/internal/usecase/game"
 
 type GameDao struct {
 	driver JsonDatabase

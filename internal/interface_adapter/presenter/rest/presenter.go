@@ -1,7 +1,7 @@
 package rest
 
 import (
-	use_case_errors "elton-okawa/battleship/internal/use_case/errors"
+	"elton-okawa/battleship/internal/usecase/ucerror"
 	"errors"
 	"fmt"
 	"net/http"
@@ -37,10 +37,11 @@ func (rp *RestApiPresenter) response(code int) {
 }
 
 func (rp *RestApiPresenter) handleError(err error) {
-	var e *use_case_errors.UseCaseError
+	var e *ucerror.Error
 	var p ProblemJson
 	var c int
 
+	fmt.Printf("%+w", err)
 	if errors.As(err, &e) {
 		httpError := CodeToHttp[e.Code]
 		c = httpError.code

@@ -2,7 +2,7 @@ package account
 
 import (
 	"elton-okawa/battleship/internal/entity"
-	"elton-okawa/battleship/internal/use_case/errors"
+	"elton-okawa/battleship/internal/usecase/ucerror"
 	"fmt"
 )
 
@@ -30,9 +30,9 @@ func (a AccountUseCase) CreateAccount(res AccountOutput, login, password string)
 	acc, err := entity.NewAccount(login, password)
 
 	if err != nil {
-		useCaseError := errors.NewError(
+		useCaseError := ucerror.NewError(
 			fmt.Sprintf("Failed to create a new account for '%s'", login),
-			errors.GenericError,
+			ucerror.GenericError,
 			err,
 		)
 
@@ -41,9 +41,9 @@ func (a AccountUseCase) CreateAccount(res AccountOutput, login, password string)
 	}
 
 	if a.persistence.SaveAccount(acc) != nil {
-		useCaseError := errors.NewError(
+		useCaseError := ucerror.NewError(
 			fmt.Sprintf("Failed to save a new account for '%s'", login),
-			errors.GenericError,
+			ucerror.GenericError,
 			err,
 		)
 
@@ -58,9 +58,9 @@ func (a AccountUseCase) Login(res AccountOutput, login, password string) {
 	acc, err := a.persistence.GetAccount(login)
 
 	if err != nil {
-		useCaseError := errors.NewError(
+		useCaseError := ucerror.NewError(
 			fmt.Sprintf("Account '%s' not found", login),
-			errors.ElementNotFound,
+			ucerror.ElementNotFound,
 			err,
 		)
 		res.LoginResponse(entity.Account{}, "", 0, useCaseError)
@@ -68,10 +68,10 @@ func (a AccountUseCase) Login(res AccountOutput, login, password string) {
 	}
 
 	if err = acc.Authenticate(password); err != nil {
-		useCaseError := errors.NewError(
+		useCaseError := ucerror.NewError(
 			"Incorrect password",
-			errors.IncorrectPassword,
-			err,
+			ucerror.IncorrectPassword,
+			nil,
 		)
 
 		res.LoginResponse(entity.Account{}, "", 0, useCaseError)
@@ -81,9 +81,9 @@ func (a AccountUseCase) Login(res AccountOutput, login, password string) {
 	if token, expires, err := entity.NewJwtToken(login); err == nil {
 		res.LoginResponse(acc, token, expires, err)
 	} else {
-		useCaseError := errors.NewError(
+		useCaseError := ucerror.NewError(
 			"Error while creating JWT Token",
-			errors.GenericError,
+			ucerror.GenericError,
 			err,
 		)
 		res.LoginResponse(entity.Account{}, "", 0, useCaseError)
