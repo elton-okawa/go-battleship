@@ -2,9 +2,11 @@ package Api
 
 import (
 	"elton-okawa/battleship/internal/database"
+	"elton-okawa/battleship/internal/database/dbaccount"
 	"elton-okawa/battleship/internal/interface_adapter/controller"
-	"elton-okawa/battleship/internal/usecase/account"
+	"elton-okawa/battleship/internal/interface_adapter/controller/controlaccount"
 	"elton-okawa/battleship/internal/usecase/game"
+	"elton-okawa/battleship/internal/usecase/ucaccount"
 	"fmt"
 	"os"
 
@@ -14,16 +16,16 @@ import (
 )
 
 type BattleshipImpl struct {
-	accounts controller.AccountController
+	accounts controlaccount.Controller
 	games    controller.GamesController
 }
 
 func SetupHandler() *echo.Echo {
-	accountDao := database.NewAccountDao("./db/accounts.json")
+	accountDao := dbaccount.New("./db/accounts.json")
 	gameDao := database.NewGameDao("./db/games.json")
 
 	app := BattleshipImpl{
-		accounts: controller.NewAccountController(account.NewAccountUseCase(accountDao)),
+		accounts: controlaccount.New(ucaccount.New(accountDao)),
 		games:    controller.NewGamesController(game.NewGameUseCase(gameDao)),
 	}
 

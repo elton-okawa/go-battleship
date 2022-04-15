@@ -1,4 +1,4 @@
-package entity
+package jwttoken
 
 import (
 	"errors"
@@ -7,7 +7,7 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-type TokenClaim struct {
+type Claim struct {
 	Username  string
 	ExpiresAt int64
 }
@@ -16,10 +16,10 @@ type TokenClaim struct {
 var hmacKey = []byte("super-secret")
 var ErrExpiredToken = errors.New("expired token")
 
-func NewJwtToken(username string) (string, int64, error) {
+func New(username string) (string, int64, error) {
 	expires := time.Now().Add(1 * time.Hour).Unix()
 
-	claims := TokenClaim{
+	claims := Claim{
 		Username:  username,
 		ExpiresAt: expires,
 	}
@@ -35,7 +35,7 @@ func NewJwtToken(username string) (string, int64, error) {
 	}
 }
 
-func (tc TokenClaim) Valid() error {
+func (tc Claim) Valid() error {
 	if tc.ExpiresAt >= time.Now().Unix() {
 		return ErrExpiredToken
 	}
@@ -43,8 +43,8 @@ func (tc TokenClaim) Valid() error {
 	return nil
 }
 
-func ValidateJwtToken(tokenStr string) (TokenClaim, error) {
-	claims := TokenClaim{}
+func Validate(tokenStr string) (Claim, error) {
+	claims := Claim{}
 	token, err := jwt.ParseWithClaims(tokenStr, &claims, func(token *jwt.Token) (interface{}, error) {
 		return hmacKey, nil
 	})
@@ -52,6 +52,6 @@ func ValidateJwtToken(tokenStr string) (TokenClaim, error) {
 	if err == nil && token.Valid {
 		return claims, nil
 	} else {
-		return TokenClaim{}, err
+		return Claim{}, err
 	}
 }

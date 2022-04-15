@@ -1,10 +1,10 @@
-package entity
+package account
 
 import "testing"
 
 func TestNewAccountUniqueId(t *testing.T) {
-	playerOne, errOne := NewAccount("player-one", "secret")
-	playerTwo, errTwo := NewAccount("player-two", "password")
+	playerOne, errOne := New("player-one", "secret")
+	playerTwo, errTwo := New("player-two", "password")
 
 	if errOne != nil || errTwo != nil {
 		t.Errorf("Error while creating new player one")
@@ -18,7 +18,7 @@ func TestNewAccountUniqueId(t *testing.T) {
 func TestNewAccountHashedPassword(t *testing.T) {
 	password := "secret"
 
-	player, _ := NewAccount("player", password)
+	player, _ := New("player", password)
 
 	if player.PasswordHash == password {
 		t.Error("We must not store plain password")
@@ -28,8 +28,8 @@ func TestNewAccountHashedPassword(t *testing.T) {
 func TestNewAccountSaltedPassword(t *testing.T) {
 	password := "secret"
 
-	playerOne, _ := NewAccount("player-one", password)
-	playerTwo, _ := NewAccount("player-two", password)
+	playerOne, _ := New("player-one", password)
+	playerTwo, _ := New("player-two", password)
 
 	if playerOne.PasswordHash == playerTwo.PasswordHash {
 		t.Error("Players with same password have the same salted hashed password")
@@ -39,7 +39,7 @@ func TestNewAccountSaltedPassword(t *testing.T) {
 func TestAccountAuthentication(t *testing.T) {
 	password := "secret"
 
-	player, _ := NewAccount("player", password)
+	player, _ := New("player", password)
 
 	if player.Authenticate("another") == nil {
 		t.Error("Player must not be able to authenticate using other password")

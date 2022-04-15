@@ -1,7 +1,7 @@
 package rest
 
 import (
-	"elton-okawa/battleship/internal/entity"
+	"elton-okawa/battleship/internal/entity/account"
 	"net/http"
 )
 
@@ -10,7 +10,7 @@ type newAccountResponse struct {
 	Login string `json:"login"`
 }
 
-func (rp RestApiPresenter) CreateAccountResponse(e entity.Account, err error) {
+func (rp RestApiPresenter) CreateAccountResponse(e account.Account, err error) {
 	if err != nil {
 		rp.handleError(err)
 		return
@@ -29,7 +29,7 @@ type loginResponse struct {
 	ExpiresAt int64  `json:"expiresAt"`
 }
 
-func (rp RestApiPresenter) LoginResponse(e entity.Account, token string, expires int64, err error) {
+func (rp RestApiPresenter) LoginResponse(e account.Account, token string, expires int64, err error) {
 	if err != nil {
 		rp.handleError(err)
 		return

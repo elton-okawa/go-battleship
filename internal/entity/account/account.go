@@ -1,4 +1,4 @@
-package entity
+package account
 
 import (
 	"github.com/google/uuid"
@@ -11,7 +11,7 @@ type Account struct {
 	PasswordHash string
 }
 
-func NewAccount(login, password string) (Account, error) {
+func New(login, password string) (Account, error) {
 	saltedBytes := []byte(password)
 	hashedBytes, err := bcrypt.GenerateFromPassword(saltedBytes, bcrypt.DefaultCost)
 	if err != nil {
