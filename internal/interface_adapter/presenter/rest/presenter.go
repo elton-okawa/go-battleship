@@ -41,7 +41,6 @@ func (rp *RestApiPresenter) handleError(err error) {
 	var p ProblemJson
 	var c int
 
-	fmt.Printf("%+w", err)
 	if errors.As(err, &e) {
 		httpError := CodeToHttp[e.Code]
 		c = httpError.code

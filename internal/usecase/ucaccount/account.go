@@ -31,7 +31,7 @@ func (a UseCase) CreateAccount(res Output, login, password string) {
 	acc, err := account.New(login, password)
 
 	if err != nil {
-		useCaseError := ucerror.NewError(
+		useCaseError := ucerror.New(
 			fmt.Sprintf("Failed to create a new account for '%s'", login),
 			ucerror.GenericError,
 			err,
@@ -42,7 +42,7 @@ func (a UseCase) CreateAccount(res Output, login, password string) {
 	}
 
 	if a.persistence.Save(acc) != nil {
-		useCaseError := ucerror.NewError(
+		useCaseError := ucerror.New(
 			fmt.Sprintf("Failed to save a new account for '%s'", login),
 			ucerror.GenericError,
 			err,
@@ -59,7 +59,7 @@ func (a UseCase) Login(res Output, login, password string) {
 	acc, err := a.persistence.Get(login)
 
 	if err != nil {
-		useCaseError := ucerror.NewError(
+		useCaseError := ucerror.New(
 			fmt.Sprintf("Account '%s' not found", login),
 			ucerror.ElementNotFound,
 			err,
@@ -69,7 +69,7 @@ func (a UseCase) Login(res Output, login, password string) {
 	}
 
 	if err = acc.Authenticate(password); err != nil {
-		useCaseError := ucerror.NewError(
+		useCaseError := ucerror.New(
 			"Incorrect password",
 			ucerror.IncorrectPassword,
 			nil,
@@ -82,7 +82,7 @@ func (a UseCase) Login(res Output, login, password string) {
 	if token, expires, err := jwttoken.New(login); err == nil {
 		res.LoginResponse(acc, token, expires, err)
 	} else {
-		useCaseError := ucerror.NewError(
+		useCaseError := ucerror.New(
 			"Error while creating JWT Token",
 			ucerror.GenericError,
 			err,

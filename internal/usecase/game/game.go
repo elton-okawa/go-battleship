@@ -47,7 +47,7 @@ func (g GameUseCase) Start(gob GameOutputBoundary) {
 func (g GameUseCase) Shoot(gob GameOutputBoundary, id string, row, col int) {
 	state, err := g.persistence.GetGameState(id)
 	if err != nil {
-		notFoundErr := ucerror.NewError(
+		notFoundErr := ucerror.New(
 			fmt.Sprintf("Could not find game with id '%s'\n%v", id, err),
 			ucerror.ElementNotFound,
 			nil,
