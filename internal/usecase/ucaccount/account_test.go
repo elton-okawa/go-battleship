@@ -8,13 +8,13 @@ import (
 	"time"
 )
 
-type MockPersistence struct {
+type MockDb struct {
 	getError  bool
 	saveError bool
 	acc       account.Account
 }
 
-func (p *MockPersistence) Get(login string) (account.Account, error) {
+func (p *MockDb) Get(login string) (account.Account, error) {
 	if p.getError {
 		return account.Account{}, errors.New("Get mock error")
 	}
@@ -22,7 +22,7 @@ func (p *MockPersistence) Get(login string) (account.Account, error) {
 	return p.acc, nil
 }
 
-func (p *MockPersistence) Save(acc account.Account) error {
+func (p *MockDb) Save(acc account.Account) error {
 	if p.saveError {
 		return errors.New("Save mock error")
 	}
@@ -53,20 +53,20 @@ func (out *MockOutput) LoginResponse(acc account.Account, token string, expiresA
 
 func TestCreateAccount(t *testing.T) {
 	username := "username"
-	persistence := &MockPersistence{}
+	db := &MockDb{}
 	out := &MockOutput{}
 
-	useCase := New(persistence)
+	useCase := New(db)
 	useCase.CreateAccount(out, username, "password")
 
 	if out.err != nil {
 		t.Fatalf("Unexpected error %v", out.err)
 	}
 
-	if persistence.acc.Login != username {
-		t.Errorf("Persisted account saved with different login (expected: %s, actual: %s)", persistence.acc.Login, username)
+	if db.acc.Login != username {
+		t.Errorf("Persisted account saved with different login (expected: %s, actual: %s)", db.acc.Login, username)
 	}
-	if persistence.acc.PasswordHash == "" {
+	if db.acc.PasswordHash == "" {
 		t.Errorf("Persisted account must have a password hash")
 	}
 
@@ -79,19 +79,19 @@ func TestCreateAccount(t *testing.T) {
 }
 
 func TestCreateAccountSaveError(t *testing.T) {
-	persistence := &MockPersistence{saveError: true}
-	output := &MockOutput{}
+	db := &MockDb{saveError: true}
+	out := &MockOutput{}
 
-	useCase := New(persistence)
-	useCase.CreateAccount(output, "username", "password")
+	useCase := New(db)
+	useCase.CreateAccount(out, "username", "password")
 
 	var e *ucerror.Error
-	if errors.As(output.err, &e) {
+	if errors.As(out.err, &e) {
 		if e.Code != ucerror.GenericError {
 			t.Errorf("Expected %d, got %d", ucerror.GenericError, e.Code)
 		}
 	} else {
-		t.Errorf("Expected ucerror.Error type %v", output.err)
+		t.Errorf("Expected ucerror.Error type %v", out.err)
 	}
 }
 
@@ -99,7 +99,7 @@ func TestLogin(t *testing.T) {
 	username := "username"
 	password := "password"
 	acc, _ := account.New(username, password)
-	db := &MockPersistence{acc: acc}
+	db := &MockDb{acc: acc}
 	out := &MockOutput{}
 
 	useCase := New(db)
@@ -124,7 +124,7 @@ func TestLogin(t *testing.T) {
 }
 
 func TestLoginIncorrectUsername(t *testing.T) {
-	db := &MockPersistence{getError: true}
+	db := &MockDb{getError: true}
 	out := &MockOutput{}
 
 	useCase := New(db)
@@ -144,7 +144,7 @@ func TestLoginIncorrectPassword(t *testing.T) {
 	username := "username"
 	password := "password"
 	acc, _ := account.New(username, password)
-	db := &MockPersistence{acc: acc}
+	db := &MockDb{acc: acc}
 	out := &MockOutput{}
 
 	useCase := New(db)
@@ -164,7 +164,7 @@ func TestCreateAccountAndLogin(t *testing.T) {
 	username := "username"
 	password := "password"
 
-	db := &MockPersistence{}
+	db := &MockDb{}
 	useCase := New(db)
 	outCreate := &MockOutput{}
 	useCase.CreateAccount(outCreate, username, password)

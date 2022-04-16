@@ -7,7 +7,7 @@ import (
 	"fmt"
 )
 
-type Persistence interface {
+type Db interface {
 	Save(account.Account) error
 	Get(login string) (account.Account, error)
 }
@@ -18,12 +18,12 @@ type Output interface {
 }
 
 type UseCase struct {
-	persistence Persistence
+	db Db
 }
 
-func New(persistence Persistence) UseCase {
+func New(db Db) UseCase {
 	return UseCase{
-		persistence: persistence,
+		db: db,
 	}
 }
 
@@ -41,7 +41,7 @@ func (a UseCase) CreateAccount(res Output, login, password string) {
 		return
 	}
 
-	if a.persistence.Save(acc) != nil {
+	if a.db.Save(acc) != nil {
 		useCaseError := ucerror.New(
 			fmt.Sprintf("Failed to save a new account for '%s'", login),
 			ucerror.GenericError,
@@ -56,7 +56,7 @@ func (a UseCase) CreateAccount(res Output, login, password string) {
 }
 
 func (a UseCase) Login(res Output, login, password string) {
-	acc, err := a.persistence.Get(login)
+	acc, err := a.db.Get(login)
 
 	if err != nil {
 		useCaseError := ucerror.New(
