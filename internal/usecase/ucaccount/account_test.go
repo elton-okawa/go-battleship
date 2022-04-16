@@ -6,6 +6,8 @@ import (
 	"errors"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 type MockDb struct {
@@ -52,6 +54,8 @@ func (out *MockOutput) LoginResponse(acc account.Account, token string, expiresA
 }
 
 func TestCreateAccount(t *testing.T) {
+	assert := assert.New(t)
+
 	username := "username"
 	db := &MockDb{}
 	out := &MockOutput{}
@@ -59,26 +63,16 @@ func TestCreateAccount(t *testing.T) {
 	useCase := New(db)
 	useCase.CreateAccount(out, username, "password")
 
-	if out.err != nil {
-		t.Fatalf("Unexpected error %v", out.err)
-	}
-
-	if db.acc.Login != username {
-		t.Errorf("Persisted account saved with different login (expected: %s, actual: %s)", db.acc.Login, username)
-	}
-	if db.acc.PasswordHash == "" {
-		t.Errorf("Persisted account must have a password hash")
-	}
-
-	if out.acc.Login != username {
-		t.Errorf("Output account with different login than expected (expected: %s, actual: %s)", out.acc.Login, username)
-	}
-	if out.acc.PasswordHash == "" {
-		t.Errorf("Output account must have a password hash")
-	}
+	assert.Nilf(out.err, "unexpected error %v", out.err)
+	assert.Equal(username, db.acc.Login, "persisted account equal")
+	assert.NotEmpty(db.acc.PasswordHash, "persisted account must have a password hash")
+	assert.Equal(username, out.acc.Login, "output login must be equal")
+	assert.NotEmpty(out.acc.PasswordHash, "output password hash must not be empty")
 }
 
 func TestCreateAccountSaveError(t *testing.T) {
+	assert := assert.New(t)
+
 	db := &MockDb{saveError: true}
 	out := &MockOutput{}
 
@@ -86,16 +80,14 @@ func TestCreateAccountSaveError(t *testing.T) {
 	useCase.CreateAccount(out, "username", "password")
 
 	var e *ucerror.Error
-	if errors.As(out.err, &e) {
-		if e.Code != ucerror.GenericError {
-			t.Errorf("Expected %d, got %d", ucerror.GenericError, e.Code)
-		}
-	} else {
-		t.Errorf("Expected ucerror.Error type %v", out.err)
+	if assert.ErrorAs(out.err, &e, "use case error") {
+		assert.Equal(e.Code, ucerror.GenericError, "use case error code")
 	}
 }
 
 func TestLogin(t *testing.T) {
+	assert := assert.New(t)
+
 	username := "username"
 	password := "password"
 	acc, _ := account.New(username, password)
@@ -105,25 +97,16 @@ func TestLogin(t *testing.T) {
 	useCase := New(db)
 	useCase.Login(out, username, password)
 
-	if out.err != nil {
-		t.Fatalf("Unexpected error %v", out.err)
-	}
-
-	if out.acc.Login != username {
-		t.Errorf("Login should be equal username (expected: %s, actual: %s)", out.acc.Login, username)
-	}
-	if out.acc.PasswordHash != acc.PasswordHash {
-		t.Errorf("PasswordHash should be equal (expected: %s, actual: %s)", out.acc.PasswordHash, acc.PasswordHash)
-	}
-	if out.token == "" {
-		t.Error("Token must not be empty", out.token)
-	}
-	if out.expiresAt <= time.Now().Add(30*time.Minute).Unix() {
-		t.Errorf("Token should be valid at least for 30 min")
-	}
+	assert.Nilf(out.err, "unexpected error %v", out.err)
+	assert.Equal(username, out.acc.Login)
+	assert.Equal(acc.PasswordHash, out.acc.PasswordHash)
+	assert.NotEmpty(out.token, "token must not be empty")
+	assert.LessOrEqual(time.Now().Add(30*time.Minute).Unix(), out.expiresAt, "token must expire at least in 30 minutes")
+	assert.GreaterOrEqual(time.Now().Add(120*time.Minute).Unix(), out.expiresAt, "token must not be valid for more than 2 hours")
 }
 
 func TestLoginIncorrectUsername(t *testing.T) {
+	assert := assert.New(t)
 	db := &MockDb{getError: true}
 	out := &MockOutput{}
 
@@ -131,16 +114,14 @@ func TestLoginIncorrectUsername(t *testing.T) {
 	useCase.Login(out, "username", "password")
 
 	var e *ucerror.Error
-	if errors.As(out.err, &e) {
-		if e.Code != ucerror.IncorrectUsername {
-			t.Errorf("Expected: %d, Got: %d", ucerror.IncorrectUsername, e.Code)
-		}
-	} else {
-		t.Fatalf("Unexpected error %v", out.err)
+	if assert.ErrorAs(out.err, &e, "use case error") {
+		assert.Equal(ucerror.IncorrectUsername, e.Code)
 	}
 }
 
 func TestLoginIncorrectPassword(t *testing.T) {
+	assert := assert.New(t)
+
 	username := "username"
 	password := "password"
 	acc, _ := account.New(username, password)
@@ -151,16 +132,14 @@ func TestLoginIncorrectPassword(t *testing.T) {
 	useCase.Login(out, username, "another-password")
 
 	var e *ucerror.Error
-	if errors.As(out.err, &e) {
-		if e.Code != ucerror.IncorrectPassword {
-			t.Errorf("Expected code: %d, got: %d", ucerror.IncorrectPassword, e.Code)
-		}
-	} else {
-		t.Fatalf("Unexpected error %v", out.err)
+	if assert.ErrorAs(out.err, &e, "use case error") {
+		assert.Equal(ucerror.IncorrectPassword, e.Code)
 	}
 }
 
 func TestCreateAccountAndLogin(t *testing.T) {
+	assert := assert.New(t)
+
 	username := "username"
 	password := "password"
 
@@ -169,14 +148,10 @@ func TestCreateAccountAndLogin(t *testing.T) {
 	outCreate := &MockOutput{}
 	useCase.CreateAccount(outCreate, username, password)
 
-	if outCreate.err != nil {
-		t.Fatalf("Unexpected error %v", outCreate.err)
-	}
+	assert.Nilf(outCreate.err, "unexpected error %v", outCreate.err)
 
 	outLogin := &MockOutput{}
 	useCase.Login(outLogin, username, password)
 
-	if outLogin.err != nil {
-		t.Fatalf("Unexpected error %v", outLogin.err)
-	}
+	assert.Nilf(outLogin.err, "unexpected error %v", outLogin.err)
 }
