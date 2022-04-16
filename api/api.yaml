@@ -12,6 +12,8 @@ tags:
   description: "Account"
 schemes:
 - "https"
+security:
+  - BearerAuth: []
 paths:
   /accounts:
     post:
@@ -19,6 +21,7 @@ paths:
       summary: "Create a new account"
       description: ""
       operationId: "CreateAccount"
+      security: []
       requestBody:
         required: true
         content:
@@ -37,6 +40,7 @@ paths:
       summary: "Perform authentication and receive a jwt token"
       description: ""
       operationId: "AccountLogin"
+      security: []
       requestBody:
         required: true
         content:
@@ -87,6 +91,11 @@ paths:
           description: Ok
 
 components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT # documentation purposes
   schemas:
     PostAccountsRequest:
       type: object
