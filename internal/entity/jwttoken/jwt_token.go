@@ -8,20 +8,22 @@ import (
 )
 
 type Claim struct {
-	Username  string
-	ExpiresAt int64
+	Iss string
+	Sub string
+	Exp int64
 }
 
 // TODO retrieve it from a secret storage
 var hmacKey = []byte("super-secret")
-var ErrExpiredToken = errors.New("expired token")
+var ErrExpiredToken = errors.New("custom expired token message")
 
 func New(username string) (string, int64, error) {
 	expires := time.Now().Add(1 * time.Hour).Unix()
 
 	claims := Claim{
-		Username:  username,
-		ExpiresAt: expires,
+		Iss: "Golang Battleship",
+		Sub: username,
+		Exp: expires,
 	}
 
 	// Create token
@@ -36,7 +38,7 @@ func New(username string) (string, int64, error) {
 }
 
 func (tc Claim) Valid() error {
-	if tc.ExpiresAt >= time.Now().Unix() {
+	if tc.Exp <= time.Now().Unix() {
 		return ErrExpiredToken
 	}
 
