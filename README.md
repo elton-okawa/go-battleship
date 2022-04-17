@@ -7,7 +7,7 @@ Implementation of [florinpop - App Ideas - Battleship Game Engine](https://githu
 Take a look at [Projects Tab](https://github.com/elton-okawa/go-battleship/projects/1) to view the planned backlog
 
 Take a look at `docs/` folder to find out more about:
-- [Why I'm using those third party packages](./third-party-packages.md)
+- [Why I'm using those third party packages](./docs/third-party-packages.md)
 
 ## How to play
 
