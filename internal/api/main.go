@@ -6,6 +6,7 @@ import (
 	"elton-okawa/battleship/internal/entity/jwttoken"
 	"elton-okawa/battleship/internal/interface_adapter/controller"
 	"elton-okawa/battleship/internal/interface_adapter/controller/controlaccount"
+	"elton-okawa/battleship/internal/interface_adapter/presenter/rest"
 	"elton-okawa/battleship/internal/usecase/game"
 	"elton-okawa/battleship/internal/usecase/ucaccount"
 	"errors"
@@ -36,6 +37,13 @@ type BattleshipImpl struct {
 	games    controller.GamesController
 }
 
+func ErrorHandler(err error, c echo.Context) {
+	presenter := rest.New(c)
+	c.Logger().Error(err)
+
+	presenter.HandleError(err)
+}
+
 func SetupHandler() *echo.Echo {
 	accountDao := dbaccount.New("./db/accounts.json")
 	gameDao := database.NewGameDao("./db/games.json")
@@ -56,6 +64,9 @@ func SetupHandler() *echo.Echo {
 	swagger.Servers = nil
 
 	e := echo.New()
+
+	e.HTTPErrorHandler = ErrorHandler
+
 	// Log all requests
 	e.Use(echoMiddleware.Logger())
 

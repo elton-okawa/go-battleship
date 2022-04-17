@@ -12,7 +12,7 @@ type newAccountResponse struct {
 
 func (rp RestApiPresenter) CreateAccountResponse(e account.Account, err error) {
 	if err != nil {
-		rp.handleError(err)
+		rp.HandleError(err)
 		return
 	}
 
@@ -31,7 +31,7 @@ type loginResponse struct {
 
 func (rp RestApiPresenter) LoginResponse(e account.Account, token string, expires int64, err error) {
 	if err != nil {
-		rp.handleError(err)
+		rp.HandleError(err)
 		return
 	}
 

@@ -36,23 +36,36 @@ func (rp *RestApiPresenter) response(code int) {
 	rp.err = rp.context.NoContent(code)
 }
 
-func (rp *RestApiPresenter) handleError(err error) {
-	var e *ucerror.Error
+func (rp *RestApiPresenter) HandleError(err error) {
+	var useCaseError *ucerror.Error
+	var echoError *echo.HTTPError
 	var p ProblemJson
 	var c int
 
-	if errors.As(err, &e) {
-		httpError := CodeToHttp[e.Code]
+	if errors.As(err, &useCaseError) {
+		httpError := CodeToHttp[useCaseError.Code]
 		c = httpError.code
 
 		// overwrite usecase message if necessary
 		msg := httpError.message
 		if msg == "" {
-			msg = e.Message
+			msg = useCaseError.Message
 		}
 
 		p = ProblemJson{
 			Title:  httpError.title,
+			Status: c,
+			Detail: msg,
+		}
+	} else if errors.As(err, &echoError) {
+		c = echoError.Code
+		var msg = "no message"
+		if v, ok := echoError.Message.(string); ok {
+			msg = v
+		}
+
+		p = ProblemJson{
+			Title:  http.StatusText(c),
 			Status: c,
 			Detail: msg,
 		}
