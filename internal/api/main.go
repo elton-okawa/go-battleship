@@ -1,9 +1,9 @@
 package Api
 
 import (
-	"context"
 	"elton-okawa/battleship/internal/database"
 	"elton-okawa/battleship/internal/database/dbaccount"
+	"elton-okawa/battleship/internal/entity/jwttoken"
 	"elton-okawa/battleship/internal/interface_adapter/controller"
 	"elton-okawa/battleship/internal/interface_adapter/controller/controlaccount"
 	"elton-okawa/battleship/internal/usecase/game"
@@ -11,6 +11,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"regexp"
 
 	"github.com/deepmap/oapi-codegen/pkg/middleware"
 	"github.com/getkin/kin-openapi/openapi3filter"
@@ -18,20 +19,22 @@ import (
 	echoMiddleware "github.com/labstack/echo/v4/middleware"
 )
 
+var ErrMissingAuthorizationHeader = errors.New("missing 'Authorization' header")
+var ErrAuthHeaderNotBearer = errors.New("authorization header does not starts with 'Bearer'")
+
+var skipAuthPathPatterns = map[string][]string{
+	"POST": {
+		"^/accounts$",
+		"^/accounts/actions/login$",
+	},
+	"GET": {},
+	"PUT": {},
+}
+
 type BattleshipImpl struct {
 	accounts controlaccount.Controller
 	games    controller.GamesController
 }
-
-func JwtAuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
-	return func(c echo.Context) error {
-		header := c.Response().Header().Get(echo.HeaderAuthorization)
-		fmt.Println(header)
-		return next(c)
-	}
-}
-
-var ErrMissingAuthorizationHeader = errors.New("missing 'Authorization' header")
 
 func SetupHandler() *echo.Echo {
 	accountDao := dbaccount.New("./db/accounts.json")
@@ -56,20 +59,40 @@ func SetupHandler() *echo.Echo {
 	// Log all requests
 	e.Use(echoMiddleware.Logger())
 
+	// The default behavior of AuthenticationValidator is always fail
+	// View https://github.com/deepmap/oapi-codegen/issues/221
+	validatorOptions := &middleware.Options{}
+	validatorOptions.Options.AuthenticationFunc = openapi3filter.NoopAuthenticationFunc
+
 	// Use oapi-generator validation middleware to check all requests
 	// against the OpenAPI schema.
-	validatorOptions := &middleware.Options{}
-
-	validatorOptions.Options.AuthenticationFunc = func(c context.Context, input *openapi3filter.AuthenticationInput) error {
-		auth := input.RequestValidationInput.Request.Header.Get("Authorization")
-		if auth == "" {
-			return ErrMissingAuthorizationHeader
-		}
-
-		return nil
-	}
 	e.Use(middleware.OapiRequestValidatorWithOptions(swagger, validatorOptions))
-	e.Use(JwtAuthMiddleware)
+
+	config := echoMiddleware.JWTConfig{
+		// TODO ideally we should use api.yaml to know which endpoints do not need auth
+		Skipper: func(c echo.Context) bool {
+			patterns := skipAuthPathPatterns[c.Request().Method]
+			path := c.Path()
+			for _, pattern := range patterns {
+				if match, err := regexp.MatchString(pattern, path); err == nil {
+					if match {
+						return true
+					}
+				} else {
+					panic(err)
+				}
+			}
+
+			return false
+		},
+		ParseTokenFunc: func(auth string, c echo.Context) (interface{}, error) {
+			claim, err := jwttoken.Validate(auth)
+
+			// Resulting claim will be available in handler's context "user" key
+			return claim, err
+		},
+	}
+	e.Use(echoMiddleware.JWTWithConfig(config))
 
 	RegisterHandlers(e, &app)
 
