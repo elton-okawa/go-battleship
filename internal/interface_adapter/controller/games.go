@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"elton-okawa/battleship/internal/use_case/game"
+	"elton-okawa/battleship/internal/usecase/game"
 	"fmt"
 )
 

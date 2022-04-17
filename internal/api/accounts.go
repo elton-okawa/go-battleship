@@ -8,7 +8,7 @@ import (
 )
 
 func (b *BattleshipImpl) CreateAccount(ctx echo.Context) error {
-	restPresenter := rest.NewRestApiPresenter(ctx)
+	restPresenter := rest.New(ctx)
 
 	var postBody CreateAccountJSONBody
 	err := ctx.Bind(&postBody)
@@ -21,5 +21,18 @@ func (b *BattleshipImpl) CreateAccount(ctx echo.Context) error {
 	}
 
 	b.accounts.CreateAccount(restPresenter, postBody.Login, postBody.Password)
+	return restPresenter.Error()
+}
+
+func (b *BattleshipImpl) AccountLogin(ctx echo.Context) error {
+	restPresenter := rest.New(ctx)
+
+	var postBody AccountLoginJSONBody
+	if err := ctx.Bind(&postBody); err != nil {
+		restPresenter.SendError(http.StatusBadRequest, "Invalid body to perform login")
+		return restPresenter.Error()
+	}
+
+	b.accounts.Login(restPresenter, postBody.Login, postBody.Password)
 	return restPresenter.Error()
 }

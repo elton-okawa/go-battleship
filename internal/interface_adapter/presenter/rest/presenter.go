@@ -1,7 +1,7 @@
 package rest
 
 import (
-	use_case_errors "elton-okawa/battleship/internal/use_case/errors"
+	"elton-okawa/battleship/internal/usecase/ucerror"
 	"errors"
 	"fmt"
 	"net/http"
@@ -10,9 +10,10 @@ import (
 )
 
 type ProblemJson struct {
-	Title  string `json:"title"`
-	Status int    `json:"status"`
-	Detail string `json:"detail"`
+	Title      string `json:"title"`
+	Status     int    `json:"status"`
+	Detail     string `json:"detail"`
+	Stacktrace string `json:"stack,omitempty"`
 	// instance string
 }
 
@@ -21,7 +22,7 @@ type RestApiPresenter struct {
 	err     error
 }
 
-func NewRestApiPresenter(ctx echo.Context) *RestApiPresenter {
+func New(ctx echo.Context) *RestApiPresenter {
 	return &RestApiPresenter{
 		context: ctx,
 	}
@@ -36,16 +37,24 @@ func (rp *RestApiPresenter) response(code int) {
 }
 
 func (rp *RestApiPresenter) handleError(err error) {
-	var e *use_case_errors.UseCaseError
+	var e *ucerror.Error
 	var p ProblemJson
 	var c int
+
 	if errors.As(err, &e) {
 		httpError := CodeToHttp[e.Code]
 		c = httpError.code
+
+		// overwrite usecase message if necessary
+		msg := httpError.message
+		if msg == "" {
+			msg = e.Message
+		}
+
 		p = ProblemJson{
 			Title:  httpError.title,
 			Status: c,
-			Detail: e.Message,
+			Detail: msg,
 		}
 	} else {
 		c = http.StatusInternalServerError

@@ -99,3 +99,23 @@ func (jd *JsonDatabase) Get(id string, out interface{}) error {
 	v, _ := json.Marshal(data[id])
 	return json.Unmarshal(v, out)
 }
+
+func (jd *JsonDatabase) FindFirstBy(property, value string, out interface{}) error {
+	data, err := jd.getData()
+	if err != nil {
+		return nil
+	}
+
+	// TODO find a safer way to find via property
+	for _, v := range data {
+		if entity, ok := v.(map[string]interface{}); ok {
+			if entity[property] == value {
+
+				bytes, _ := json.Marshal(entity)
+				return json.Unmarshal(bytes, out)
+			}
+		}
+	}
+
+	return ErrNotFound
+}

@@ -12,6 +12,8 @@ tags:
   description: "Account"
 schemes:
 - "https"
+security:
+  - BearerAuth: []
 paths:
   /accounts:
     post:
@@ -19,6 +21,7 @@ paths:
       summary: "Create a new account"
       description: ""
       operationId: "CreateAccount"
+      security: []
       requestBody:
         required: true
         content:
@@ -30,6 +33,30 @@ paths:
           description: Account created successfully
         400:
           description: "Invalid input"
+  
+  /accounts/actions/login:
+    post: 
+      tags: ["account"]
+      summary: "Perform authentication and receive a jwt token"
+      description: ""
+      operationId: "AccountLogin"
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostLoginRequest"
+      responses:
+        200:
+          description: Successfully logged in
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostLoginResponse"
+        403:
+          description: Incorrect user or password
+
   /games:
     post:
       tags: ["game"]
@@ -64,19 +91,41 @@ paths:
           description: Ok
 
 components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT # documentation purposes
   schemas:
     PostAccountsRequest:
-      type: "object"
-      required:
-      - "login"
-      - "password"
+      type: object
+      required: ["login", "password"]
       properties:
         login:
-          type: "string"
+          type: string
           minLength: 5
         password:
-          type: "string"
+          type: string
           minLength: 8
+    PostLoginRequest:
+      type: object
+      required: ["login", "password"]
+      properties:
+        login:
+          type: string
+          minLength: 5
+        password:
+          type: string
+          minLength: 8
+    PostLoginResponse:
+      type: object
+      required: ["token", "expiresAt"]
+      properties:
+        token:
+          type: string
+        expiresAt:
+          type: string
+          format: date-time
     PostGameActionShootRequest:
       type: object
       required: [row, col]

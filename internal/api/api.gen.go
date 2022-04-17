@@ -12,10 +12,15 @@ import (
 	"net/url"
 	"path"
 	"strings"
+	"time"
 
 	"github.com/deepmap/oapi-codegen/pkg/runtime"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/labstack/echo/v4"
+)
+
+const (
+	BearerAuthScopes = "BearerAuth.Scopes"
 )
 
 // PostAccountsRequest defines model for PostAccountsRequest.
@@ -30,14 +35,32 @@ type PostGameActionShootRequest struct {
 	Row int `json:"row"`
 }
 
+// PostLoginRequest defines model for PostLoginRequest.
+type PostLoginRequest struct {
+	Login    string `json:"login"`
+	Password string `json:"password"`
+}
+
+// PostLoginResponse defines model for PostLoginResponse.
+type PostLoginResponse struct {
+	ExpiresAt time.Time `json:"expiresAt"`
+	Token     string    `json:"token"`
+}
+
 // CreateAccountJSONBody defines parameters for CreateAccount.
 type CreateAccountJSONBody PostAccountsRequest
+
+// AccountLoginJSONBody defines parameters for AccountLogin.
+type AccountLoginJSONBody PostLoginRequest
 
 // GameShootJSONBody defines parameters for GameShoot.
 type GameShootJSONBody PostGameActionShootRequest
 
 // CreateAccountJSONRequestBody defines body for CreateAccount for application/json ContentType.
 type CreateAccountJSONRequestBody CreateAccountJSONBody
+
+// AccountLoginJSONRequestBody defines body for AccountLogin for application/json ContentType.
+type AccountLoginJSONRequestBody AccountLoginJSONBody
 
 // GameShootJSONRequestBody defines body for GameShoot for application/json ContentType.
 type GameShootJSONRequestBody GameShootJSONBody
@@ -47,6 +70,9 @@ type ServerInterface interface {
 	// Create a new account
 	// (POST /accounts)
 	CreateAccount(ctx echo.Context) error
+	// Perform authentication and receive a jwt token
+	// (POST /accounts/actions/login)
+	AccountLogin(ctx echo.Context) error
 	// Start a new game
 	// (POST /games)
 	CreateGame(ctx echo.Context) error
@@ -69,9 +95,20 @@ func (w *ServerInterfaceWrapper) CreateAccount(ctx echo.Context) error {
 	return err
 }
 
+// AccountLogin converts echo context to params.
+func (w *ServerInterfaceWrapper) AccountLogin(ctx echo.Context) error {
+	var err error
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.AccountLogin(ctx)
+	return err
+}
+
 // CreateGame converts echo context to params.
 func (w *ServerInterfaceWrapper) CreateGame(ctx echo.Context) error {
 	var err error
+
+	ctx.Set(BearerAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.CreateGame(ctx)
@@ -88,6 +125,8 @@ func (w *ServerInterfaceWrapper) GameShoot(ctx echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
 	}
+
+	ctx.Set(BearerAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.GameShoot(ctx, id)
@@ -123,6 +162,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	}
 
 	router.POST(baseURL+"/accounts", wrapper.CreateAccount)
+	router.POST(baseURL+"/accounts/actions/login", wrapper.AccountLogin)
 	router.POST(baseURL+"/games", wrapper.CreateGame)
 	router.POST(baseURL+"/games/:id/actions/shoot", wrapper.GameShoot)
 
@@ -131,16 +171,19 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/7SUT2vcMBDFv4qZ9mhib2ih6Jb0EAKFhuRY9qDIs7ZSW1I0412Wxd+9jOz9E2+W5NKb",
-	"LGaent785B08a8IHzQ0oKNYLyMH4LniHjgnUDsg02Om0fPDEN8b43jE94muPxLIdog8Y2WIqan1tnSw6",
-	"636hq0X4ew68DQgKiKN1NQw5BE208bGalf44Kx1yiPja24gVqD+T/kn/8tDhn1/QsIiL0zvd4Y1h691T",
-	"4z1fNGx8O3mwXd+BKg961jHWGEUw+s1HRTOf0pEn8XODUtt4MQOtN7pN6xysW3k5pUIy0QaxDgqeuK+2",
-	"kANbbkXkzme3mrlFamyAHNYYaaxcXJVXpbj1AZ0OFhSkoLhJFy30NLuUgR+zkCS0nHRfgYKfETXjNGMY",
-	"L4TEt77ajlE5Rpf6dAitNamzeCHvjqjI6mvEFSj4UhxZKiaQivcoGt6mx7HHtEHBOxrHdF0uzrOZdDKT",
-	"fFcZ9cYg0apv260E8a0sz5vu3Vq3tsqsCz2nuVHfdTpuDwFkOnO4yfQhB9Y1yVD3O0vpKmrd4YdhCobw",
-	"mbuM5dXM0BPryJOfepTam0mfJ06Kna2GQifkqSCB/rI5sZXeRSIk6g4Zo8jObT0i+T4azGyVEAWViIIc",
-	"nJyvIO2/nV1+gsLJ216cv+3l/2Pswvv/FGrvUPP773wyU3rzcQzT7THtNsyB5BdAG13Lf0LB9VV5bJsf",
-	"c5eYOoQ7IjbkF8A/Fu7JHJbDvwAAAP//ExFHTtMFAAA=",
+	"H4sIAAAAAAAC/8xVTW/jNhD9K8S0RzWS0xYodHMKNEgRYIN4gT0EPjDUWGIikQo5stcw9N8XQ9HydzaX",
+	"AHuj6ZmnxzdvZjbwLD0+SKogh3Q5gQSUbVpr0JCHfANeVdjIcHywnqZK2c6Qf8S3Dj3xdetsi440hqDa",
+	"ltrwodHmHk3JwH8nQOsWIQdPTpsS+gRa6f3KuuIo9J+T0D4Bh2+ddlhA/hTx9/LnY4Z9fkFFDM5Mb2WD",
+	"U0XamlllLV0krGwdOeimayDPRjxtCEt0DOjs6mdBRzw5Iwnglwje80t+fR0jTd9a4/GUJ35vtUM/DU9Y",
+	"WNdIghwKSfgH6QbhDGWyrxie9j7DISzZ+8IpxT4Bj6pzmtYzNurA6QalQzftWIgNPIdf/22p/f/tKySD",
+	"rRlp+HdHsyJqoWfgynJdoLZK1uGcgDYLy5AFeuV0y+aCHGbUFWtG0FQzxK0VN5KoRl/pFhJYovND5OQq",
+	"u8pYAtuika2GHEIJqAq8Uxm7K8hsB1uw2JK/dFdADv86lISxC2EQDD3d2GI9mNkQmpAn27bWKmSmL96a",
+	"XTPz6XeHC8jht3TX7Wls9fRcn/eH1SHXYbgYbBEIX2eTU20ijlCBdyF8pxR6v+jqes1C/JVlp0l3Zilr",
+	"XQht2u6wyJA/zRPwXdNItx7lEFIYXAk5qkKy9Gyh7c2cMUZ1UxnGgk/HHjuvdeR+Hzvls6Q+mAMf0jn7",
+	"jO/HBg8Ejvy9VzNR27JELs1QvT/PVU9Z51CR6Dw6YZ0YZ8x7pXxAx+NDyI4qNBTfI6QphEOFesllflmR",
+	"2M6F80UuZRwC7/UP7wb4iH2H8Eh8pDoj6SiarhygtmTCzz0m6UYX/Wg4z5voMjmmFZZVGApONkjoGPaY",
+	"1iN62zmFQhdhKkEehggkYGSYauH+0EbJniX2FsXkdFHMP8/rF5byx11/qMOX1+PKRPWOy9FvJ3645Rnv",
+	"eZvsefFwazzNWQW/kiXv9hyur7Id6jGL22C5UfvBgX1yYRTuArfG7ef9jwAAAP//ngezRIcJAAA=",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

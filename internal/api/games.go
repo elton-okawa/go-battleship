@@ -8,14 +8,14 @@ import (
 )
 
 func (b *BattleshipImpl) CreateGame(ctx echo.Context) error {
-	restPresenter := rest.NewRestApiPresenter(ctx)
+	restPresenter := rest.New(ctx)
 
 	b.games.PostGame(restPresenter)
 	return restPresenter.Error()
 }
 
 func (b *BattleshipImpl) GameShoot(ctx echo.Context, id string) error {
-	restPresenter := rest.NewRestApiPresenter(ctx)
+	restPresenter := rest.New(ctx)
 
 	var body GameShootJSONBody
 	if err := ctx.Bind(&body); err != nil {

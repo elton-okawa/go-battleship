@@ -2,7 +2,7 @@ package rest
 
 import (
 	"elton-okawa/battleship/internal/entity"
-	"elton-okawa/battleship/internal/use_case/game"
+	"elton-okawa/battleship/internal/usecase/game"
 	"encoding/json"
 	"fmt"
 	"net/http"
