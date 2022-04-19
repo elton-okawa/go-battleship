@@ -1,4 +1,4 @@
-package api
+package router
 
 import (
 	"elton-okawa/battleship/internal/interface_adapter/presenter/rest"

@@ -1,9 +1,9 @@
-package api
+package router
 
 import (
-	"elton-okawa/battleship/internal/database"
-	"elton-okawa/battleship/internal/database/dbaccount"
 	"elton-okawa/battleship/internal/entity/jwttoken"
+	"elton-okawa/battleship/internal/infra/database"
+	"elton-okawa/battleship/internal/infra/database/dbaccount"
 	"elton-okawa/battleship/internal/interface_adapter/controller"
 	"elton-okawa/battleship/internal/interface_adapter/controller/controlaccount"
 	"elton-okawa/battleship/internal/interface_adapter/presenter/rest"

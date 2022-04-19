@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"elton-okawa/battleship/internal/database"
+	"elton-okawa/battleship/internal/infra/database"
 )
 
 func main() {

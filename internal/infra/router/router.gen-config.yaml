@@ -1,6 +1,6 @@
 output:
-  ./api.gen.go
-package: api
+  ./router.gen.go
+package: router
 generate:
   - server
   - spec
