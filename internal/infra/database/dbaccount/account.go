@@ -1,8 +1,8 @@
 package dbaccount
 
 import (
-	"elton-okawa/battleship/internal/database"
 	"elton-okawa/battleship/internal/entity/account"
+	"elton-okawa/battleship/internal/infra/database"
 )
 
 type Account struct {

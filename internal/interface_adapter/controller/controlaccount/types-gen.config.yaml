@@ -1,0 +1,7 @@
+output:
+  ./types.gen.go
+package: controlaccount
+generate:
+  - types
+include-tags:
+  - account

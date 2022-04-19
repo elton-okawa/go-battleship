@@ -18,41 +18,53 @@ type ProblemJson struct {
 }
 
 type RestApiPresenter struct {
-	context echo.Context
-	err     error
+	code int
+	body interface{}
 }
 
-func New(ctx echo.Context) *RestApiPresenter {
-	return &RestApiPresenter{
-		context: ctx,
-	}
+func New() *RestApiPresenter {
+	return &RestApiPresenter{}
 }
 
 func (rp *RestApiPresenter) responseBody(code int, data interface{}) {
-	rp.err = rp.context.JSON(code, data)
+	rp.code = code
+	rp.body = data
 }
 
 func (rp *RestApiPresenter) response(code int) {
-	rp.err = rp.context.NoContent(code)
+	rp.code = code
 }
 
-func (rp *RestApiPresenter) handleError(err error) {
-	var e *ucerror.Error
+func (rp *RestApiPresenter) MapError(err error) (int, interface{}) {
+	var useCaseError *ucerror.Error
+	var echoError *echo.HTTPError
 	var p ProblemJson
 	var c int
 
-	if errors.As(err, &e) {
-		httpError := CodeToHttp[e.Code]
+	if errors.As(err, &useCaseError) {
+		httpError := CodeToHttp[useCaseError.Code]
 		c = httpError.code
 
 		// overwrite usecase message if necessary
 		msg := httpError.message
 		if msg == "" {
-			msg = e.Message
+			msg = useCaseError.Message
 		}
 
 		p = ProblemJson{
 			Title:  httpError.title,
+			Status: c,
+			Detail: msg,
+		}
+	} else if errors.As(err, &echoError) {
+		c = echoError.Code
+		var msg = "no message"
+		if v, ok := echoError.Message.(string); ok {
+			msg = v
+		}
+
+		p = ProblemJson{
+			Title:  http.StatusText(c),
 			Status: c,
 			Detail: msg,
 		}
@@ -65,21 +77,13 @@ func (rp *RestApiPresenter) handleError(err error) {
 		}
 	}
 
-	rp.context.Response().Header().Set("Content-Type", "application/problem+json")
-	rp.err = rp.context.JSON(c, &p)
+	return c, &p
 }
 
-func (rp *RestApiPresenter) SendError(code int, message string) {
-	p := ProblemJson{
-		Title:  http.StatusText(code),
-		Status: code,
-		Detail: message,
-	}
-
-	rp.context.Response().Header().Set("Content-Type", "application/problem+json")
-	rp.err = rp.context.JSON(code, &p)
+func (rp *RestApiPresenter) Body() interface{} {
+	return rp.body
 }
 
-func (rp *RestApiPresenter) Error() error {
-	return rp.err
+func (rp *RestApiPresenter) Code() int {
+	return rp.code
 }

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"elton-okawa/battleship/internal/database"
+	"elton-okawa/battleship/internal/infra/database"
 	"elton-okawa/battleship/internal/interface_adapter/presenter"
 )
 

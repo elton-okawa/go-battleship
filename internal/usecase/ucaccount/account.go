@@ -13,8 +13,8 @@ type Db interface {
 }
 
 type Output interface {
-	CreateAccountResponse(account.Account, error)
-	LoginResponse(account.Account, string, int64, error)
+	CreateAccountResponse(AccountDTO)
+	LoginResponse(LoginDTO)
 }
 
 type UseCase struct {
@@ -27,7 +27,7 @@ func New(db Db) UseCase {
 	}
 }
 
-func (a UseCase) CreateAccount(res Output, login, password string) {
+func (a UseCase) CreateAccount(res Output, login, password string) error {
 	acc, err := account.New(login, password)
 
 	if err != nil {
@@ -36,9 +36,7 @@ func (a UseCase) CreateAccount(res Output, login, password string) {
 			ucerror.GenericError,
 			err,
 		)
-
-		res.CreateAccountResponse(account.Account{}, useCaseError)
-		return
+		return useCaseError
 	}
 
 	if a.db.Save(acc) != nil {
@@ -47,15 +45,14 @@ func (a UseCase) CreateAccount(res Output, login, password string) {
 			ucerror.GenericError,
 			err,
 		)
-
-		res.CreateAccountResponse(account.Account{}, useCaseError)
-		return
+		return useCaseError
 	}
 
-	res.CreateAccountResponse(acc, nil)
+	res.CreateAccountResponse(NewAccountDTO(acc))
+	return nil
 }
 
-func (a UseCase) Login(res Output, login, password string) {
+func (a UseCase) Login(res Output, login, password string) error {
 	acc, err := a.db.Get(login)
 
 	if err != nil {
@@ -64,8 +61,7 @@ func (a UseCase) Login(res Output, login, password string) {
 			ucerror.IncorrectUsername,
 			err,
 		)
-		res.LoginResponse(account.Account{}, "", 0, useCaseError)
-		return
+		return useCaseError
 	}
 
 	if err = acc.Authenticate(password); err != nil {
@@ -74,19 +70,18 @@ func (a UseCase) Login(res Output, login, password string) {
 			ucerror.IncorrectPassword,
 			err,
 		)
-
-		res.LoginResponse(account.Account{}, "", 0, useCaseError)
-		return
+		return useCaseError
 	}
 
-	if token, expires, err := jwttoken.New(login); err == nil {
-		res.LoginResponse(acc, token, expires, err)
-	} else {
+	if token, expires, err := jwttoken.New(login); err != nil {
 		useCaseError := ucerror.New(
 			"Error while creating JWT Token",
 			ucerror.GenericError,
 			err,
 		)
-		res.LoginResponse(account.Account{}, "", 0, useCaseError)
+		return useCaseError
+	} else {
+		res.LoginResponse(NewLoginDTO(acc, token, expires))
+		return nil
 	}
 }

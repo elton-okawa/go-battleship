@@ -1,7 +1,11 @@
 package controlaccount
 
 import (
+	"elton-okawa/battleship/internal/interface_adapter/controller"
 	"elton-okawa/battleship/internal/usecase/ucaccount"
+	"net/http"
+
+	"github.com/labstack/echo/v4"
 )
 
 type Controller struct {
@@ -14,10 +18,26 @@ func New(a ucaccount.UseCase) Controller {
 	}
 }
 
-func (c Controller) CreateAccount(res ucaccount.Output, login, password string) {
-	c.useCase.CreateAccount(res, login, password)
+func (c Controller) CreateAccount(res ucaccount.Output, ctx controller.Context) error {
+	var body CreateAccountJSONBody
+	if err := ctx.Bind(&body); err != nil {
+		return echo.NewHTTPError(
+			http.StatusBadRequest,
+			"Invalid format for createAccount",
+		)
+	}
+
+	return c.useCase.CreateAccount(res, body.Login, body.Password)
 }
 
-func (c Controller) Login(res ucaccount.Output, login, password string) {
-	c.useCase.Login(res, login, password)
+func (c Controller) Login(res ucaccount.Output, ctx controller.Context) error {
+	var body AccountLoginJSONBody
+	if err := ctx.Bind(&body); err != nil {
+		return echo.NewHTTPError(
+			http.StatusBadRequest,
+			"Invalid body to perform login",
+		)
+	}
+
+	return c.useCase.Login(res, body.Login, body.Password)
 }

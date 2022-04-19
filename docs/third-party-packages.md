@@ -1,6 +1,5 @@
 # About third party packages
 
-# Table of Contents
 1. [oapi-codegen](#open-api-codegen)
 2. [testify](#testify)
 
@@ -17,7 +16,7 @@ I knew I could solve all those problems by writing a OpenAPI Specification and g
 
 I found two main approaches, one was writing the OpenAPI Specification and generating the code or writing annotations in code and generating the OpenAPI Specification. I chose the former because it seemed to require less code to be written.
 
-Open api and router bindings generator alternatives and thoughts:
+### Alternatives and thoughts
 * https://github.com/deepmap/oapi-codegen (better doc)
 * https://github.com/getkin/kin-openapi
 * https://openapi.tools/ (reference)
@@ -42,6 +41,6 @@ I decided to use `testify` because of the following reasons:
 2. It still follows the same test style of the builtin `testing` package.
 3. It was the most popular from the alternatives (16k stars on Github) and had active development which means new features, updates and bug correction.
 
-Testing alternatives and thoughts:
+### Alternatives and thoughts
 * https://github.com/stretchr/testify (same approach as `testing`)
 * https://github.com/onsi/ginkgo (BDD)

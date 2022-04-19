@@ -1,0 +1,6 @@
+output:
+  ./router.gen.go
+package: router
+generate:
+  - server
+  - spec

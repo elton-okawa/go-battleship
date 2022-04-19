@@ -1,11 +1,12 @@
-package Api
+package router
 
 import (
-	"elton-okawa/battleship/internal/database"
-	"elton-okawa/battleship/internal/database/dbaccount"
 	"elton-okawa/battleship/internal/entity/jwttoken"
+	"elton-okawa/battleship/internal/infra/database"
+	"elton-okawa/battleship/internal/infra/database/dbaccount"
 	"elton-okawa/battleship/internal/interface_adapter/controller"
 	"elton-okawa/battleship/internal/interface_adapter/controller/controlaccount"
+	"elton-okawa/battleship/internal/interface_adapter/presenter/rest"
 	"elton-okawa/battleship/internal/usecase/game"
 	"elton-okawa/battleship/internal/usecase/ucaccount"
 	"errors"
@@ -36,6 +37,15 @@ type BattleshipImpl struct {
 	games    controller.GamesController
 }
 
+func ErrorHandler(err error, c echo.Context) {
+	presenter := rest.New()
+	c.Logger().Error(err)
+
+	code, body := presenter.MapError(err)
+	c.Response().Header().Set("Content-Type", "application/problem+json")
+	c.JSON(code, body)
+}
+
 func SetupHandler() *echo.Echo {
 	accountDao := dbaccount.New("./db/accounts.json")
 	gameDao := database.NewGameDao("./db/games.json")
@@ -56,6 +66,9 @@ func SetupHandler() *echo.Echo {
 	swagger.Servers = nil
 
 	e := echo.New()
+
+	e.HTTPErrorHandler = ErrorHandler
+
 	// Log all requests
 	e.Use(echoMiddleware.Logger())
 
