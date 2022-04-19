@@ -42,6 +42,7 @@ func ErrorHandler(err error, c echo.Context) {
 	c.Logger().Error(err)
 
 	code, body := presenter.MapError(err)
+	c.Response().Header().Set("Content-Type", "application/problem+json")
 	c.JSON(code, body)
 }
 

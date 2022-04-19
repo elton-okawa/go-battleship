@@ -22,9 +22,6 @@ type ResponseCallback func(int, interface{})
 type RestApiPresenter struct {
 	code int
 	body interface{}
-	err  error
-	// context echo.Context
-	// err     error
 }
 
 func New() *RestApiPresenter {
@@ -32,13 +29,11 @@ func New() *RestApiPresenter {
 }
 
 func (rp *RestApiPresenter) responseBody(code int, data interface{}) {
-	// rp.err = rp.context.JSON(code, data)
 	rp.code = code
 	rp.body = data
 }
 
 func (rp *RestApiPresenter) response(code int) {
-	// rp.err = rp.context.NoContent(code)
 	rp.code = code
 }
 
@@ -84,27 +79,7 @@ func (rp *RestApiPresenter) MapError(err error) (int, interface{}) {
 		}
 	}
 
-	// rp.context.Response().Header().Set("Content-Type", "application/problem+json")
-	// rp.err = rp.context.JSON(c, &p)
-
-	return c, p
-}
-
-func (rp *RestApiPresenter) CreateError(code int, message string) {
-	p := ProblemJson{
-		Title:  http.StatusText(code),
-		Status: code,
-		Detail: message,
-	}
-
-	// rp.context.Response().Header().Set("Content-Type", "application/problem+json")
-	// rp.err = rp.context.JSON(code, &p)
-	rp.code = code
-	rp.body = p
-}
-
-func (rp *RestApiPresenter) Error() error {
-	return rp.err
+	return c, &p
 }
 
 func (rp *RestApiPresenter) Body() interface{} {
