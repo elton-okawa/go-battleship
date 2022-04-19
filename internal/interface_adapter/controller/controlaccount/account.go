@@ -1,6 +1,7 @@
 package controlaccount
 
 import (
+	"elton-okawa/battleship/internal/interface_adapter/controller"
 	"elton-okawa/battleship/internal/usecase/ucaccount"
 	"net/http"
 
@@ -17,7 +18,7 @@ func New(a ucaccount.UseCase) Controller {
 	}
 }
 
-func (c Controller) CreateAccount(res ucaccount.Output, ctx echo.Context) error {
+func (c Controller) CreateAccount(res ucaccount.Output, ctx controller.Context) error {
 	var body CreateAccountJSONBody
 	if err := ctx.Bind(&body); err != nil {
 		return echo.NewHTTPError(
@@ -29,7 +30,7 @@ func (c Controller) CreateAccount(res ucaccount.Output, ctx echo.Context) error 
 	return c.useCase.CreateAccount(res, body.Login, body.Password)
 }
 
-func (c Controller) Login(res ucaccount.Output, ctx echo.Context) error {
+func (c Controller) Login(res ucaccount.Output, ctx controller.Context) error {
 	var body AccountLoginJSONBody
 	if err := ctx.Bind(&body); err != nil {
 		return echo.NewHTTPError(

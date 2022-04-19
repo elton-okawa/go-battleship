@@ -17,8 +17,6 @@ type ProblemJson struct {
 	// instance string
 }
 
-type ResponseCallback func(int, interface{})
-
 type RestApiPresenter struct {
 	code int
 	body interface{}
