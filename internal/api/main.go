@@ -1,4 +1,4 @@
-package Api
+package api
 
 import (
 	"elton-okawa/battleship/internal/database"
@@ -38,10 +38,11 @@ type BattleshipImpl struct {
 }
 
 func ErrorHandler(err error, c echo.Context) {
-	presenter := rest.New(c)
+	presenter := rest.New()
 	c.Logger().Error(err)
 
-	presenter.HandleError(err)
+	code, body := presenter.MapError(err)
+	c.JSON(code, body)
 }
 
 func SetupHandler() *echo.Echo {

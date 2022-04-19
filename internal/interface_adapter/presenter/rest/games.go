@@ -16,7 +16,7 @@ type shootResponse struct {
 
 func (rp RestApiPresenter) StartResult(gs *game.GameState, err error) {
 	if err != nil {
-		rp.HandleError(err)
+		rp.MapError(err)
 		return
 	}
 
@@ -26,7 +26,7 @@ func (rp RestApiPresenter) StartResult(gs *game.GameState, err error) {
 
 func (rp RestApiPresenter) ShootResult(gs *game.GameState, hit bool, ships int, err error) {
 	if err != nil {
-		rp.HandleError(err)
+		rp.MapError(err)
 		return
 	}
 

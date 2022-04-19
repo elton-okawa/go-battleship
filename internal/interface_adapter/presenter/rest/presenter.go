@@ -17,26 +17,32 @@ type ProblemJson struct {
 	// instance string
 }
 
+type ResponseCallback func(int, interface{})
+
 type RestApiPresenter struct {
-	context echo.Context
-	err     error
+	code int
+	body interface{}
+	err  error
+	// context echo.Context
+	// err     error
 }
 
-func New(ctx echo.Context) *RestApiPresenter {
-	return &RestApiPresenter{
-		context: ctx,
-	}
+func New() *RestApiPresenter {
+	return &RestApiPresenter{}
 }
 
 func (rp *RestApiPresenter) responseBody(code int, data interface{}) {
-	rp.err = rp.context.JSON(code, data)
+	// rp.err = rp.context.JSON(code, data)
+	rp.code = code
+	rp.body = data
 }
 
 func (rp *RestApiPresenter) response(code int) {
-	rp.err = rp.context.NoContent(code)
+	// rp.err = rp.context.NoContent(code)
+	rp.code = code
 }
 
-func (rp *RestApiPresenter) HandleError(err error) {
+func (rp *RestApiPresenter) MapError(err error) (int, interface{}) {
 	var useCaseError *ucerror.Error
 	var echoError *echo.HTTPError
 	var p ProblemJson
@@ -78,21 +84,33 @@ func (rp *RestApiPresenter) HandleError(err error) {
 		}
 	}
 
-	rp.context.Response().Header().Set("Content-Type", "application/problem+json")
-	rp.err = rp.context.JSON(c, &p)
+	// rp.context.Response().Header().Set("Content-Type", "application/problem+json")
+	// rp.err = rp.context.JSON(c, &p)
+
+	return c, p
 }
 
-func (rp *RestApiPresenter) SendError(code int, message string) {
+func (rp *RestApiPresenter) CreateError(code int, message string) {
 	p := ProblemJson{
 		Title:  http.StatusText(code),
 		Status: code,
 		Detail: message,
 	}
 
-	rp.context.Response().Header().Set("Content-Type", "application/problem+json")
-	rp.err = rp.context.JSON(code, &p)
+	// rp.context.Response().Header().Set("Content-Type", "application/problem+json")
+	// rp.err = rp.context.JSON(code, &p)
+	rp.code = code
+	rp.body = p
 }
 
 func (rp *RestApiPresenter) Error() error {
 	return rp.err
+}
+
+func (rp *RestApiPresenter) Body() interface{} {
+	return rp.body
+}
+
+func (rp *RestApiPresenter) Code() int {
+	return rp.code
 }

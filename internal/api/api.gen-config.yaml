@@ -1,0 +1,6 @@
+output:
+  ./api.gen.go
+package: api
+generate:
+  - server
+  - spec
