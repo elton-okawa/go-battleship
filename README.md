@@ -34,5 +34,5 @@ go tool cover -html=cover.out -o cover.html
 
 ## Generate OpenApi code
 ```
-oapi-codegen -generate server,types,spec api/api.yaml > internal/api/api.gen.go
+go generate ./...
 ```
