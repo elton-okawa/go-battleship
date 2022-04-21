@@ -57,7 +57,7 @@ func (rp *RestApiPresenter) MapError(err error) (int, interface{}) {
 			Detail: msg,
 			Debug:  useCaseError.Debug(), // TODO omit complete message on prod env
 		}
-	} else if errors.As(err, &echoError) {
+	} else if errors.As(err, &echoError) { // usually validation error
 		c = echoError.Code
 		var msg = "no message"
 		if v, ok := echoError.Message.(string); ok {

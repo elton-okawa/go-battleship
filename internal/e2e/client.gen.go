@@ -52,6 +52,13 @@ type PostLoginResponse struct {
 	Token     string `json:"token"`
 }
 
+// ProblemJson defines model for ProblemJson.
+type ProblemJson struct {
+	Detail string  `json:"detail"`
+	Status float32 `json:"status"`
+	Title  string  `json:"title"`
+}
+
 // CreateAccountJSONBody defines parameters for CreateAccount.
 type CreateAccountJSONBody PostAccountsRequest
 
@@ -466,6 +473,7 @@ type CreateAccountResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *PostAccountsResponse
+	JSON400      *ProblemJson
 }
 
 // Status returns HTTPResponse.Status
@@ -628,6 +636,13 @@ func ParseCreateAccountResponse(rsp *http.Response) (*CreateAccountResponse, err
 			return nil, err
 		}
 		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ProblemJson
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
 
 	}
 

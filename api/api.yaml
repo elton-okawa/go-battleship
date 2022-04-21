@@ -37,6 +37,10 @@ paths:
                 $ref: "#/components/schemas/PostAccountsResponse"
         400:
           description: "Invalid input"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemJson"
   
   /accounts/actions/login:
     post: 
@@ -101,6 +105,16 @@ components:
       scheme: bearer
       bearerFormat: JWT # documentation purposes
   schemas:
+    ProblemJson:
+      type: object
+      required: ["title", "status", "detail"]
+      properties:
+        title:
+          type: string
+        status:
+          type: number
+        detail:
+          type: string
     PostAccountsRequest:
       type: object
       required: ["login", "password"]

@@ -28,6 +28,13 @@ type PostLoginResponse struct {
 	Token     string `json:"token"`
 }
 
+// ProblemJson defines model for ProblemJson.
+type ProblemJson struct {
+	Detail string  `json:"detail"`
+	Status float32 `json:"status"`
+	Title  string  `json:"title"`
+}
+
 // CreateAccountJSONBody defines parameters for CreateAccount.
 type CreateAccountJSONBody PostAccountsRequest
 

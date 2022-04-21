@@ -22,11 +22,12 @@ type TestSuite struct {
 	suite.Suite
 	clt e2e.ClientWithResponsesInterface
 	svr *httptest.Server
+	req e2e.CreateAccountJSONRequestBody
 }
 
 var path, _ = filepath.Abs(filepath.Join("..", "..", "..", "db", "test"))
 
-func (ts *TestSuite) SetupSuite() {
+func (s *TestSuite) SetupSuite() {
 	opt := router.Options{
 		Db: router.DBOptions{
 			Path: path,
@@ -35,29 +36,49 @@ func (ts *TestSuite) SetupSuite() {
 
 	rt := router.Setup(opt)
 	svr := httptest.NewServer(rt)
-	ts.svr = svr
+	s.svr = svr
+
+	s.req = e2e.CreateAccountJSONRequestBody{
+		Login:    "username",
+		Password: "password",
+	}
 
 	clt, _ := e2e.NewClientWithResponses(svr.URL)
-	ts.clt = clt
+	s.clt = clt
 	fmt.Printf("Test server listening to '%s'\n", svr.URL)
 }
 
-func (ts *TestSuite) SetupTest() {
+func (s *TestSuite) SetupTest() {
 	e2e.CleanupDatabase(path)
 }
 
-func (ts *TestSuite) TearDownSuite() {
-	ts.svr.Close()
+func (s *TestSuite) TearDownSuite() {
+	s.svr.Close()
 }
 
-func (ts *TestSuite) TestPostAccount() {
-	res, err := ts.clt.CreateAccountWithResponse(context.TODO(), e2e.CreateAccountJSONRequestBody{
-		Login:    "username",
-		Password: "password",
-	})
-	ts.Nilf(err, "unexpected error %v", err)
-	ts.Equal(res.StatusCode(), 201)
+func (s TestSuite) TestPostAccount() {
+	res, err := s.clt.CreateAccountWithResponse(context.TODO(), s.req)
+	s.Nilf(err, "unexpected error %v", err)
+	s.Equal(res.StatusCode(), 201)
 
-	ts.NotEmpty(res.JSON201.Id)
-	ts.Equal("username", res.JSON201.Login)
+	s.NotEmpty(res.JSON201.Id)
+	s.Equal("username", res.JSON201.Login)
+}
+
+func (s TestSuite) TestPostAccount_LoginFewerThanFiveChar() {
+	s.req.Login = "user"
+	res, err := s.clt.CreateAccountWithResponse(context.TODO(), s.req)
+	s.Nilf(err, "unexpected error %v", err)
+	s.Equal(res.StatusCode(), 400)
+
+	s.Contains(res.JSON400.Detail, "login")
+}
+
+func (s TestSuite) TestPostAccount_PasswordFewerThanEightChar() {
+	s.req.Password = "pass"
+	res, err := s.clt.CreateAccountWithResponse(context.TODO(), s.req)
+	s.Nilf(err, "unexpected error %v", err)
+	s.Equal(res.StatusCode(), 400)
+
+	s.Contains(res.JSON400.Detail, "password")
 }
