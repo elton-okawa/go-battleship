@@ -1,0 +1,6 @@
+output:
+  ./response.gen.go
+package: rest
+generate:
+  - types
+

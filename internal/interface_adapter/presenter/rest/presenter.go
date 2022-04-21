@@ -9,14 +9,6 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type ProblemJson struct {
-	Title  string `json:"title"`
-	Status int    `json:"status"`
-	Detail string `json:"detail"`
-	Debug  string `json:"debug,omitempty"`
-	// instance string
-}
-
 type RestApiPresenter struct {
 	code int
 	body interface{}
@@ -51,11 +43,12 @@ func (rp *RestApiPresenter) MapError(err error) (int, interface{}) {
 			msg = useCaseError.Message
 		}
 
+		debugMsg := useCaseError.Debug()
 		p = ProblemJson{
 			Title:  httpError.title,
 			Status: c,
 			Detail: msg,
-			Debug:  useCaseError.Debug(), // TODO omit complete message on prod env
+			Debug:  &debugMsg, // TODO omit complete message on prod env
 		}
 	} else if errors.As(err, &echoError) { // usually validation error
 		c = echoError.Code

@@ -112,8 +112,10 @@ components:
         title:
           type: string
         status:
-          type: number
+          type: integer
         detail:
+          type: string
+        debug:
           type: string
     PostAccountsRequest:
       type: object
@@ -152,6 +154,7 @@ components:
         expiresAt:
           description: "Unix time in ms"
           type: integer
+          format: int64
     PostGameActionShootRequest:
       type: object
       required: [row, col]

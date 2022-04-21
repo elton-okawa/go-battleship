@@ -48,14 +48,15 @@ type PostLoginRequest struct {
 // PostLoginResponse defines model for PostLoginResponse.
 type PostLoginResponse struct {
 	// Unix time in ms
-	ExpiresAt int    `json:"expiresAt"`
+	ExpiresAt int64  `json:"expiresAt"`
 	Token     string `json:"token"`
 }
 
 // ProblemJson defines model for ProblemJson.
 type ProblemJson struct {
+	Debug  *string `json:"debug,omitempty"`
 	Detail string  `json:"detail"`
-	Status float32 `json:"status"`
+	Status int     `json:"status"`
 	Title  string  `json:"title"`
 }
 
