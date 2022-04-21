@@ -10,10 +10,10 @@ import (
 )
 
 type ProblemJson struct {
-	Title      string `json:"title"`
-	Status     int    `json:"status"`
-	Detail     string `json:"detail"`
-	Stacktrace string `json:"stack,omitempty"`
+	Title  string `json:"title"`
+	Status int    `json:"status"`
+	Detail string `json:"detail"`
+	Debug  string `json:"debug,omitempty"`
 	// instance string
 }
 
@@ -55,6 +55,7 @@ func (rp *RestApiPresenter) MapError(err error) (int, interface{}) {
 			Title:  httpError.title,
 			Status: c,
 			Detail: msg,
+			Debug:  useCaseError.Debug(), // TODO omit complete message on prod env
 		}
 	} else if errors.As(err, &echoError) {
 		c = echoError.Code

@@ -39,7 +39,7 @@ func (a UseCase) CreateAccount(res Output, login, password string) error {
 		return useCaseError
 	}
 
-	if a.db.Save(acc) != nil {
+	if err = a.db.Save(acc); err != nil {
 		useCaseError := ucerror.New(
 			fmt.Sprintf("Failed to save a new account for '%s'", login),
 			ucerror.GenericError,
