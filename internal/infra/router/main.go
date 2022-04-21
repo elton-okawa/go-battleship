@@ -43,7 +43,9 @@ type DBOptions struct {
 }
 
 func (opt DBOptions) File(key string) string {
-	return filepath.Join(opt.Path, fmt.Sprintf("%s.json", key))
+	path := filepath.Join(opt.Path, fmt.Sprintf("%s.json", key))
+	fmt.Printf("[DB] %s: %s\n", key, path)
+	return path
 }
 
 type Options struct {
@@ -55,6 +57,7 @@ func ErrorHandler(err error, c echo.Context) {
 	c.Logger().Error(err)
 
 	code, body := presenter.MapError(err)
+
 	c.Response().Header().Set("Content-Type", "application/problem+json")
 	c.JSON(code, body)
 }
