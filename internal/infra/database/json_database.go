@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"io/ioutil"
+	"os"
 
 	"github.com/google/uuid"
 )
@@ -26,7 +27,19 @@ type Entity interface {
 
 var ErrNotFound = errors.New("Entity not found")
 
+func ensureFile(filepath string) error {
+	if _, err := os.Stat(filepath); err != nil {
+		return saveDataToFile(filepath, make(map[string]interface{}))
+	}
+
+	return nil
+}
+
 func readDataFromFile(filepath string) (map[string]interface{}, error) {
+	if err := ensureFile(filepath); err != nil {
+		return nil, err
+	}
+
 	data := make(map[string]interface{}, 0)
 
 	fileData, err := ioutil.ReadFile(filepath)
