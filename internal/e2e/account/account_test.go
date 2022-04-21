@@ -3,10 +3,7 @@ package account
 import (
 	"context"
 	"elton-okawa/battleship/internal/e2e"
-	"elton-okawa/battleship/internal/infra/router"
-	"fmt"
 	"net/http/httptest"
-	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
@@ -25,31 +22,20 @@ type TestSuite struct {
 	req e2e.CreateAccountJSONRequestBody
 }
 
-var path, _ = filepath.Abs(filepath.Join("..", "..", "..", "db", "test"))
-
 func (s *TestSuite) SetupSuite() {
-	opt := router.Options{
-		Db: router.DBOptions{
-			Path: path,
-		},
-	}
-
-	rt := router.Setup(opt)
-	svr := httptest.NewServer(rt)
-	s.svr = svr
+	s.svr = e2e.SetupTestServer()
 
 	s.req = e2e.CreateAccountJSONRequestBody{
 		Login:    "username",
 		Password: "password",
 	}
 
-	clt, _ := e2e.NewClientWithResponses(svr.URL)
+	clt, _ := e2e.NewClientWithResponses(s.svr.URL)
 	s.clt = clt
-	fmt.Printf("Test server listening to '%s'\n", svr.URL)
 }
 
 func (s *TestSuite) SetupTest() {
-	e2e.CleanupDatabase(path)
+	e2e.CleanupDatabase()
 }
 
 func (s *TestSuite) TearDownSuite() {
