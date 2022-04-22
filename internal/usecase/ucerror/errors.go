@@ -25,5 +25,9 @@ func (e *Error) Error() string {
 }
 
 func (e *Error) Debug() string {
-	return fmt.Sprintf("[USE_CASE_ERROR: %d] %s\n%v", e.Code, e.Message, e.err)
+	if e.err != nil {
+		return fmt.Sprintf("[USE_CASE_ERROR: %d] %s\n%v", e.Code, e.Message, e.err)
+	} else {
+		return e.Error()
+	}
 }

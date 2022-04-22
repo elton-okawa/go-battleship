@@ -31,8 +31,16 @@ paths:
       responses:
         201:
           description: Account created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostAccountsResponse"
         400:
           description: "Invalid input"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemJson"
   
   /accounts/actions/login:
     post: 
@@ -54,8 +62,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PostLoginResponse"
-        403:
+        401:
           description: Incorrect user or password
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemJson"
 
   /games:
     post:
@@ -97,6 +109,18 @@ components:
       scheme: bearer
       bearerFormat: JWT # documentation purposes
   schemas:
+    ProblemJson:
+      type: object
+      required: ["title", "status", "detail"]
+      properties:
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        debug:
+          type: string
     PostAccountsRequest:
       type: object
       required: ["login", "password"]
@@ -107,6 +131,14 @@ components:
         password:
           type: string
           minLength: 8
+    PostAccountsResponse:
+      type: object
+      required: ["id", "login"]
+      properties:
+        id:
+          type: string
+        login:
+          type: string
     PostLoginRequest:
       type: object
       required: ["login", "password"]
@@ -124,8 +156,9 @@ components:
         token:
           type: string
         expiresAt:
-          type: string
-          format: date-time
+          description: "Unix time in ms"
+          type: integer
+          format: int64
     PostGameActionShootRequest:
       type: object
       required: [row, col]

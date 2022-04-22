@@ -12,6 +12,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"regexp"
 
 	"github.com/deepmap/oapi-codegen/pkg/middleware"
@@ -37,18 +38,41 @@ type BattleshipImpl struct {
 	games    controller.GamesController
 }
 
+type Database struct {
+	Account ucaccount.Db
+}
+
+type DBOptions struct {
+	Path string
+}
+
+func (opt DBOptions) File(key string) string {
+	path := filepath.Join(opt.Path, fmt.Sprintf("%s.json", key))
+	fmt.Printf("[DB] %s: %s\n", key, path)
+	return path
+}
+
+type Options struct {
+	Db DBOptions
+}
+
 func ErrorHandler(err error, c echo.Context) {
 	presenter := rest.New()
 	c.Logger().Error(err)
 
 	code, body := presenter.MapError(err)
+
 	c.Response().Header().Set("Content-Type", "application/problem+json")
 	c.JSON(code, body)
 }
 
-func SetupHandler() *echo.Echo {
-	accountDao := dbaccount.New("./db/accounts.json")
-	gameDao := database.NewGameDao("./db/games.json")
+func Setup(opt Options) (*echo.Echo, *Database) {
+	accountDao := dbaccount.New(opt.Db.File("accounts"))
+	gameDao := database.NewGameDao(opt.Db.File("games"))
+
+	db := &Database{
+		Account: accountDao,
+	}
 
 	app := BattleshipImpl{
 		accounts: controlaccount.New(ucaccount.New(accountDao)),
@@ -109,5 +133,5 @@ func SetupHandler() *echo.Echo {
 
 	RegisterHandlers(e, &app)
 
-	return e
+	return e, db
 }
