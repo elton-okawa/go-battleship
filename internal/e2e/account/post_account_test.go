@@ -3,6 +3,7 @@ package account
 import (
 	"context"
 	"elton-okawa/battleship/internal/e2e"
+	"elton-okawa/battleship/internal/e2e/setup"
 	"net/http/httptest"
 	"testing"
 
@@ -11,19 +12,20 @@ import (
 
 // In order for 'go test' to run this suite, we need to create
 // a normal test function and pass our suite to suite.Run
-func TestAccountSuite(t *testing.T) {
-	suite.Run(t, new(TestSuite))
+func TestSuite_PostAccount(t *testing.T) {
+	suite.Run(t, new(TestPostAccountSuite))
 }
 
-type TestSuite struct {
+type TestPostAccountSuite struct {
 	suite.Suite
 	clt e2e.ClientWithResponsesInterface
 	svr *httptest.Server
 	req e2e.CreateAccountJSONRequestBody
 }
 
-func (s *TestSuite) SetupSuite() {
-	s.svr = e2e.SetupTestServer()
+func (s *TestPostAccountSuite) SetupSuite() {
+	svr, _ := setup.TestServer()
+	s.svr = svr
 
 	s.req = e2e.CreateAccountJSONRequestBody{
 		Login:    "username",
@@ -34,37 +36,37 @@ func (s *TestSuite) SetupSuite() {
 	s.clt = clt
 }
 
-func (s *TestSuite) SetupTest() {
-	e2e.CleanupDatabase()
+func (s *TestPostAccountSuite) SetupTest() {
+	setup.CleanupDatabase()
 }
 
-func (s *TestSuite) TearDownSuite() {
+func (s *TestPostAccountSuite) TearDownSuite() {
 	s.svr.Close()
 }
 
-func (s TestSuite) TestPostAccount() {
+func (s TestPostAccountSuite) TestPostAccount() {
 	res, err := s.clt.CreateAccountWithResponse(context.TODO(), s.req)
 	s.Nilf(err, "unexpected error %v", err)
-	s.Equal(res.StatusCode(), 201)
+	s.Equal(201, res.StatusCode())
 
 	s.NotEmpty(res.JSON201.Id)
 	s.Equal("username", res.JSON201.Login)
 }
 
-func (s TestSuite) TestPostAccount_LoginFewerThanFiveChar() {
+func (s TestPostAccountSuite) TestPostAccount_LoginFewerThanFiveChar() {
 	s.req.Login = "user"
 	res, err := s.clt.CreateAccountWithResponse(context.TODO(), s.req)
 	s.Nilf(err, "unexpected error %v", err)
-	s.Equal(res.StatusCode(), 400)
+	s.Equal(400, res.StatusCode())
 
 	s.Contains(res.JSON400.Detail, "login")
 }
 
-func (s TestSuite) TestPostAccount_PasswordFewerThanEightChar() {
+func (s TestPostAccountSuite) TestPostAccount_PasswordFewerThanEightChar() {
 	s.req.Password = "pass"
 	res, err := s.clt.CreateAccountWithResponse(context.TODO(), s.req)
 	s.Nilf(err, "unexpected error %v", err)
-	s.Equal(res.StatusCode(), 400)
+	s.Equal(400, res.StatusCode())
 
 	s.Contains(res.JSON400.Detail, "password")
 }

@@ -16,7 +16,7 @@ func main() {
 			Path: path,
 		},
 	}
-	app := router.Setup(opt)
+	app, _ := router.Setup(opt)
 
 	app.Logger.Fatal(app.Start(address))
 }

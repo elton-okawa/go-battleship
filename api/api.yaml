@@ -62,8 +62,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PostLoginResponse"
-        403:
+        401:
           description: Incorrect user or password
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemJson"
 
   /games:
     post:

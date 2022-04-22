@@ -38,6 +38,10 @@ type BattleshipImpl struct {
 	games    controller.GamesController
 }
 
+type Database struct {
+	Account ucaccount.Db
+}
+
 type DBOptions struct {
 	Path string
 }
@@ -62,9 +66,13 @@ func ErrorHandler(err error, c echo.Context) {
 	c.JSON(code, body)
 }
 
-func Setup(opt Options) *echo.Echo {
+func Setup(opt Options) (*echo.Echo, *Database) {
 	accountDao := dbaccount.New(opt.Db.File("accounts"))
 	gameDao := database.NewGameDao(opt.Db.File("games"))
+
+	db := &Database{
+		Account: accountDao,
+	}
 
 	app := BattleshipImpl{
 		accounts: controlaccount.New(ucaccount.New(accountDao)),
@@ -125,5 +133,5 @@ func Setup(opt Options) *echo.Echo {
 
 	RegisterHandlers(e, &app)
 
-	return e
+	return e, db
 }

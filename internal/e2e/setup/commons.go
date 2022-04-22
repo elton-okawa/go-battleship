@@ -1,4 +1,4 @@
-package e2e
+package setup
 
 import (
 	"elton-okawa/battleship/internal/infra/router"
@@ -25,15 +25,15 @@ func CleanupDatabase() {
 	}
 }
 
-func SetupTestServer() *httptest.Server {
+func TestServer() (*httptest.Server, *router.Database) {
 	opt := router.Options{
 		Db: router.DBOptions{
 			Path: basePath,
 		},
 	}
 
-	rt := router.Setup(opt)
+	rt, db := router.Setup(opt)
 	svr := httptest.NewServer(rt)
 	fmt.Printf("Test server listening to '%s'\n", svr.URL)
-	return svr
+	return svr, db
 }

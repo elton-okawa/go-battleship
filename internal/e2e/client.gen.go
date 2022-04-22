@@ -497,6 +497,7 @@ type AccountLoginResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *PostLoginResponse
+	JSON401      *ProblemJson
 }
 
 // Status returns HTTPResponse.Status
@@ -670,6 +671,13 @@ func ParseAccountLoginResponse(rsp *http.Response) (*AccountLoginResponse, error
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ProblemJson
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
 
 	}
 
