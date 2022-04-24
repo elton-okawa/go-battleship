@@ -67,16 +67,16 @@ func ErrorHandler(err error, c echo.Context) {
 }
 
 func Setup(opt Options) (*echo.Echo, *Repository) {
-	accountDao := dbaccount.New(opt.Repo.File("accounts"))
-	gameDao := database.NewGameDao(opt.Repo.File("games"))
+	accRepo := dbaccount.New(opt.Repo.File("accounts"))
+	gameRepo := database.NewGameDao(opt.Repo.File("games"))
 
 	db := &Repository{
-		Account: accountDao,
+		Account: accRepo,
 	}
 
 	app := BattleshipImpl{
-		accounts: controlaccount.New(ucaccount.New(accountDao)),
-		games:    controller.NewGamesController(game.NewGameUseCase(gameDao)),
+		accounts: controlaccount.New(ucaccount.New(accRepo)),
+		games:    controller.NewGamesController(game.NewGameUseCase(gameRepo)),
 	}
 
 	swagger, err := GetSwagger()

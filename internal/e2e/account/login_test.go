@@ -19,17 +19,17 @@ func TestSuite_Login(t *testing.T) {
 
 type TestLoginSuite struct {
 	suite.Suite
-	clt        e2e.ClientWithResponsesInterface
-	svr        *httptest.Server
-	accountDao ucaccount.Repository
-	req        e2e.AccountLoginJSONRequestBody
+	clt     e2e.ClientWithResponsesInterface
+	svr     *httptest.Server
+	accRepo ucaccount.Repository
+	req     e2e.AccountLoginJSONRequestBody
 }
 
 func (s *TestLoginSuite) SetupSuite() {
-	svr, db := setup.TestServer()
+	svr, repository := setup.TestServer()
 
 	s.svr = svr
-	s.accountDao = db.Account
+	s.accRepo = repository.Account
 	s.req = e2e.AccountLoginJSONRequestBody{
 		Login:    "username",
 		Password: "password",
@@ -43,7 +43,7 @@ func (s *TestLoginSuite) SetupTest() {
 	setup.CleanupDatabase()
 
 	acc, _ := account.New(s.req.Login, s.req.Password)
-	s.accountDao.Save(acc)
+	s.accRepo.Save(acc)
 }
 
 func (s *TestLoginSuite) TearDownSuite() {
