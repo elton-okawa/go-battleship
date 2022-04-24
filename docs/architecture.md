@@ -58,3 +58,5 @@ Using `POST /accounts` as example, we'll go step by step to explain what each pa
 * `router` performs the error handling in a centralized manner
 * `router` performs request validation by using a middleware
 * `use case` does not implements an `input port` interface -> we're not likely to change it
+* `router` access `presenter` struct data - [view thoughts](./architecture-thoughts.md#22-04-2022-router-accessing-presenter-struct-values)
+* `controller` knows about `presenter interface` - [view thoughts](./architecture-thoughts.md#22-04-2022-controller-knowing-about-presenter-interface-expected-by-use-case)
