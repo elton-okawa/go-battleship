@@ -12,7 +12,7 @@ func main() {
 	fmt.Printf("Server listening to %s\n", address)
 	path, _ := filepath.Abs(filepath.Join("db"))
 	opt := router.Options{
-		Db: router.DBOptions{
+		Repo: router.RepositoryOption{
 			Path: path,
 		},
 	}

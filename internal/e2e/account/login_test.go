@@ -21,7 +21,7 @@ type TestLoginSuite struct {
 	suite.Suite
 	clt        e2e.ClientWithResponsesInterface
 	svr        *httptest.Server
-	accountDao ucaccount.Db
+	accountDao ucaccount.Repository
 	req        e2e.AccountLoginJSONRequestBody
 }
 

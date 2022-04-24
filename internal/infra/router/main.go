@@ -38,22 +38,22 @@ type BattleshipImpl struct {
 	games    controller.GamesController
 }
 
-type Database struct {
-	Account ucaccount.Db
+type Repository struct {
+	Account ucaccount.Repository
 }
 
-type DBOptions struct {
+type RepositoryOption struct {
 	Path string
 }
 
-func (opt DBOptions) File(key string) string {
+func (opt RepositoryOption) File(key string) string {
 	path := filepath.Join(opt.Path, fmt.Sprintf("%s.json", key))
 	fmt.Printf("[DB] %s: %s\n", key, path)
 	return path
 }
 
 type Options struct {
-	Db DBOptions
+	Repo RepositoryOption
 }
 
 func ErrorHandler(err error, c echo.Context) {
@@ -66,11 +66,11 @@ func ErrorHandler(err error, c echo.Context) {
 	c.JSON(code, body)
 }
 
-func Setup(opt Options) (*echo.Echo, *Database) {
-	accountDao := dbaccount.New(opt.Db.File("accounts"))
-	gameDao := database.NewGameDao(opt.Db.File("games"))
+func Setup(opt Options) (*echo.Echo, *Repository) {
+	accountDao := dbaccount.New(opt.Repo.File("accounts"))
+	gameDao := database.NewGameDao(opt.Repo.File("games"))
 
-	db := &Database{
+	db := &Repository{
 		Account: accountDao,
 	}
 
