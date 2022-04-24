@@ -19,17 +19,17 @@ func (a *Account) SetId(id string) {
 	a.Id = id
 }
 
-type Dao struct {
+type Repository struct {
 	driver database.JsonDatabase
 }
 
-func New(filepath string) Dao {
-	return Dao{
+func New(filepath string) Repository {
+	return Repository{
 		driver: database.NewJsonDatabase(filepath),
 	}
 }
 
-func (db Dao) Save(e account.Account) error {
+func (db Repository) Save(e account.Account) error {
 	account := Account{
 		Id:           e.Id,
 		Login:        e.Login,
@@ -39,7 +39,7 @@ func (db Dao) Save(e account.Account) error {
 	return db.driver.Save(&account)
 }
 
-func (db Dao) Get(login string) (account.Account, error) {
+func (db Repository) Get(login string) (account.Account, error) {
 	var model Account
 	err := db.driver.FindFirstBy("login", login, &model)
 

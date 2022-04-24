@@ -7,7 +7,7 @@ import (
 	"fmt"
 )
 
-type Db interface {
+type Repository interface {
 	Save(account.Account) error
 	Get(login string) (account.Account, error)
 }
@@ -18,12 +18,12 @@ type Output interface {
 }
 
 type UseCase struct {
-	db Db
+	repo Repository
 }
 
-func New(db Db) UseCase {
+func New(repo Repository) UseCase {
 	return UseCase{
-		db: db,
+		repo: repo,
 	}
 }
 
@@ -39,7 +39,7 @@ func (a UseCase) CreateAccount(res Output, login, password string) error {
 		return useCaseError
 	}
 
-	if err = a.db.Save(acc); err != nil {
+	if err = a.repo.Save(acc); err != nil {
 		useCaseError := ucerror.New(
 			fmt.Sprintf("Failed to save a new account for '%s'", login),
 			ucerror.GenericError,
@@ -53,7 +53,7 @@ func (a UseCase) CreateAccount(res Output, login, password string) error {
 }
 
 func (a UseCase) Login(res Output, login, password string) error {
-	acc, err := a.db.Get(login)
+	acc, err := a.repo.Get(login)
 
 	if err != nil {
 		useCaseError := ucerror.New(

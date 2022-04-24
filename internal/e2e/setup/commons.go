@@ -25,9 +25,9 @@ func CleanupDatabase() {
 	}
 }
 
-func TestServer() (*httptest.Server, *router.Database) {
+func TestServer() (*httptest.Server, *router.Repository) {
 	opt := router.Options{
-		Db: router.DBOptions{
+		Repo: router.RepositoryOption{
 			Path: basePath,
 		},
 	}

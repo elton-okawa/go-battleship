@@ -1,5 +1,19 @@
 # Architecture Thoughts
 
+## 24-04-2022 Persistence in Frameworks and Libraries or Interface Adapter layer?
+
+The article [Implementing Clean Architecture Framework](http://www.plainionist.net/Implementing-Clean-Architecture-Frameworks/) discuss about persistence code and in which layer it should live.
+
+There are two main approaches:
+1. In `interface adapters` layer we map entity to ORM independent code and in `frameworks and libraries` we have framework specific code that does the persistence
+2. We directly map entity to persisted form in `frameworks and libraries` layer
+
+## 24-04-2022 Nuances
+
+This article [Nuances in Clean Architecture](https://lukemorton.tech/articles/nuances-in-clean-architecture) discuss a bit about the purposed architecture and people's interpretation of it:
+* Presenter versus returned value
+* Crossing boundaries by mapping entities to plain data structures
+
 ## 24-04-2022 Alternatives summary
 
 After all those thoughts from yesterday, it seems that the proposed interaction between `view` and `presenter` is that the `presenter` would trigger `view` updates by using an observer pattern.
