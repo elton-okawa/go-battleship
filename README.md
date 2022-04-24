@@ -6,18 +6,14 @@ Implementation of [florinpop - App Ideas - Battleship Game Engine](https://githu
 
 Take a look at:
 - [Projects Tab](https://github.com/elton-okawa/go-battleship/projects/1) to view the planned backlog
-- [Why I'm using those third party packages](./docs/third-party-packages.md)
+- [Architecture and control flow](./docs/architecture.md)
+- [About current third party packages in use](./docs/third-party-packages.md)
 
-## How to play
+## Start server
 
 Run server
 ```
-go run ./cmd/server
-```
-
-Run CLI
-```
-go run ./cmd/game/*
+go run ./cmd/server/main.go
 ```
 
 ## Testing
