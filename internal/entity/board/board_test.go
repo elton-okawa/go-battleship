@@ -1,11 +1,11 @@
-package entity
+package board
 
 import (
 	"testing"
 )
 
-func TestNewBoardSize(t *testing.T) {
-	board := NewBoard(8, 3)
+func TestNew_Size(t *testing.T) {
+	board := New(8, 3)
 
 	placementCorrect := true
 
@@ -30,14 +30,14 @@ func TestNewBoardSize(t *testing.T) {
 	}
 }
 
-func TestNewBoardShipCount(t *testing.T) {
-	board := NewBoard(8, 3)
+func TestNew_ShipCount(t *testing.T) {
+	board := New(8, 3)
 
 	count := 0
 
 	for row := 0; row < board.Size; row++ {
 		for col := 0; col < board.Size; col++ {
-			if board.Placement[row][col] == SINGLE_SQUARE_SHIP {
+			if board.Placement[row][col] == SHIP {
 				count++
 			}
 		}
@@ -48,8 +48,8 @@ func TestNewBoardShipCount(t *testing.T) {
 	}
 }
 
-func TestShootMiss(t *testing.T) {
-	board := NewBoard(8, 3)
+func TestShoot_Miss(t *testing.T) {
+	board := New(8, 3)
 
 	initialShips := board.ShipCount
 	missRow := -1
@@ -57,7 +57,7 @@ func TestShootMiss(t *testing.T) {
 
 	for row := 0; missRow == -1 && row < board.Size; row++ {
 		for col := 0; missCol == -1 && col < board.Size; col++ {
-			if board.Placement[row][col] != SINGLE_SQUARE_SHIP {
+			if board.Placement[row][col] != SHIP {
 				missRow = row
 				missCol = col
 			}
@@ -87,8 +87,8 @@ func TestShootMiss(t *testing.T) {
 	}
 }
 
-func TestShootHit(t *testing.T) {
-	board := NewBoard(8, 3)
+func TestShoot_Hit(t *testing.T) {
+	board := New(8, 3)
 
 	initialShips := board.ShipCount
 	hitRow := -1
@@ -96,7 +96,7 @@ func TestShootHit(t *testing.T) {
 
 	for row := 0; hitRow == -1 && row < board.Size; row++ {
 		for col := 0; hitCol == -1 && col < board.Size; col++ {
-			if board.Placement[row][col] == SINGLE_SQUARE_SHIP {
+			if board.Placement[row][col] == SHIP {
 				hitRow = row
 				hitCol = col
 			}
