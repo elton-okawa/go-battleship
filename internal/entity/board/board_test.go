@@ -46,20 +46,9 @@ func TestNew_ShipCount(t *testing.T) {
 func TestShoot_Miss(t *testing.T) {
 	assert := assert.New(t)
 	board := New(8, 3)
-
 	initialShips := board.ShipCount
-	missRow := -1
-	missCol := -1
 
-	for row := 0; missRow == -1 && row < board.Size; row++ {
-		for col := 0; missCol == -1 && col < board.Size; col++ {
-			if board.Placement[row][col] != SHIP {
-				missRow = row
-				missCol = col
-			}
-		}
-	}
-
+	missRow, missCol := find(board.Placement, EMPTY)
 	hit, shipCount := board.Shoot(missRow, missCol)
 	assert.False(hit, "It should have missed the shot")
 	assert.Equal(initialShips, shipCount, "Ship count should not have changed after a miss shot")
@@ -81,20 +70,9 @@ func TestShoot_Miss(t *testing.T) {
 func TestShoot_Hit(t *testing.T) {
 	assert := assert.New(t)
 	board := New(8, 3)
-
 	initialShips := board.ShipCount
-	hitRow := -1
-	hitCol := -1
 
-	for row := 0; hitRow == -1 && row < board.Size; row++ {
-		for col := 0; hitCol == -1 && col < board.Size; col++ {
-			if board.Placement[row][col] == SHIP {
-				hitRow = row
-				hitCol = col
-			}
-		}
-	}
-
+	hitRow, hitCol := find(board.Placement, SHIP)
 	hit, shipCount := board.Shoot(hitRow, hitCol)
 	assert.True(hit, "It should have hit the shot")
 	assert.Equal(initialShips, shipCount+1, "Ship count should have been reduced by 1")
@@ -111,4 +89,34 @@ func TestShoot_Hit(t *testing.T) {
 			}
 		}
 	}
+}
+
+func TestCanShoot(t *testing.T) {
+	assert := assert.New(t)
+
+	board := New(8, 3)
+	board.State[1][0] = HIT
+	board.State[1][1] = MISS
+
+	emptyRow, emptyCol := find(board.State, EMPTY)
+	assert.True(board.CanShoot(emptyRow, emptyCol), "It should be possible to shot a empty spot")
+
+	hitRow, hitCol := find(board.State, HIT)
+	assert.False(board.CanShoot(hitRow, hitCol), "It should not be possible to shot in a hit spot")
+
+	missRow, missCol := find(board.State, MISS)
+	assert.False(board.CanShoot(missRow, missCol), "It should not be possible to shot in a miss spot")
+}
+
+func find(board [][]uint8, target uint8) (int, int) {
+	for row := 0; row < len(board); row++ {
+		for col := 0; col < len(board[row]); col++ {
+			if board[row][col] == target {
+				return row, col
+			}
+		}
+	}
+
+	// in test environment it should not happen
+	return -1, -1
 }

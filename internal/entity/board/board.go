@@ -36,15 +36,8 @@ func New(size, shipCount int) *Board {
 	return &board
 }
 
-func emptyMap(size int) [][]uint8 {
-	m := make([][]uint8, size)
-
-	for i := 0; i < size; i++ {
-		m[i] = make([]uint8, size)
-	}
-
-	// Coincidently the EMPTY is the same as the zeroed value :)
-	return m
+func (board *Board) CanShoot(row, col int) bool {
+	return board.State[row][col] == EMPTY
 }
 
 func (board *Board) Shoot(row, col int) (bool, int) {
@@ -75,4 +68,15 @@ func placeShip(board *Board, ship uint8) {
 			positioned = true
 		}
 	}
+}
+
+func emptyMap(size int) [][]uint8 {
+	m := make([][]uint8, size)
+
+	for i := 0; i < size; i++ {
+		m[i] = make([]uint8, size)
+	}
+
+	// Coincidently the EMPTY is the same as the zeroed value :)
+	return m
 }
