@@ -2,9 +2,12 @@ package board
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNew_Size(t *testing.T) {
+	assert := assert.New(t)
 	board := New(8, 3)
 
 	placementCorrect := true
@@ -14,23 +17,18 @@ func TestNew_Size(t *testing.T) {
 	for _, row := range board.Placement {
 		placementCorrect = placementCorrect && len(row) == size
 	}
-
-	if !placementCorrect {
-		t.Errorf("Placement does not have correct square size of '%d'", size)
-	}
+	assert.Truef(placementCorrect, "Placement does not have correct square size of '%d'", size)
 
 	stateCorrect := true
 	stateCorrect = stateCorrect && len(board.State) == size
 	for _, row := range board.State {
 		stateCorrect = stateCorrect && len(row) == size
 	}
-
-	if !stateCorrect {
-		t.Errorf("State does not have correct square size of '%d'", size)
-	}
+	assert.Truef(stateCorrect, "State does not have correct square size of '%d'", size)
 }
 
 func TestNew_ShipCount(t *testing.T) {
+	assert := assert.New(t)
 	board := New(8, 3)
 
 	count := 0
@@ -42,13 +40,11 @@ func TestNew_ShipCount(t *testing.T) {
 			}
 		}
 	}
-
-	if count != board.ShipCount {
-		t.Errorf("Ship count does not match %d", board.ShipCount)
-	}
+	assert.Equal(board.ShipCount, count)
 }
 
 func TestShoot_Miss(t *testing.T) {
+	assert := assert.New(t)
 	board := New(8, 3)
 
 	initialShips := board.ShipCount
@@ -65,29 +61,25 @@ func TestShoot_Miss(t *testing.T) {
 	}
 
 	hit, shipCount := board.Shoot(missRow, missCol)
-
-	if hit != false {
-		t.Errorf("It should have missed the shot")
-	}
-
-	if initialShips != shipCount {
-		t.Errorf("Ship count should not have changed after a miss shot")
-	}
-
-	if board.State[missRow][missCol] != MISS {
-		t.Errorf("It should have updated .state with miss")
-	}
+	assert.False(hit, "It should have missed the shot")
+	assert.Equal(initialShips, shipCount, "Ship count should not have changed after a miss shot")
+	assert.Equal(MISS, board.State[missRow][missCol], "It should have updated 'state' property with miss")
 
 	for row := 0; row < board.Size; row++ {
 		for col := 0; col < board.Size; col++ {
-			if row != missRow && col != missCol && board.State[row][col] == MISS {
-				t.Errorf("It should not have change .state of other placements")
+			if row != missRow && col != missCol {
+				assert.NotEqual(
+					MISS,
+					board.State[row][col],
+					"It should not have change 'state' property of other placements",
+				)
 			}
 		}
 	}
 }
 
 func TestShoot_Hit(t *testing.T) {
+	assert := assert.New(t)
 	board := New(8, 3)
 
 	initialShips := board.ShipCount
@@ -104,23 +96,18 @@ func TestShoot_Hit(t *testing.T) {
 	}
 
 	hit, shipCount := board.Shoot(hitRow, hitCol)
-
-	if hit != true {
-		t.Errorf("It should have hit the shot")
-	}
-
-	if initialShips != shipCount+1 {
-		t.Errorf("Ship count should have been reduced by one (initialShips: %d, currentShips: %d)", initialShips, shipCount)
-	}
-
-	if board.State[hitRow][hitCol] != HIT {
-		t.Errorf("It should have updated .state with hit")
-	}
+	assert.True(hit, "It should have hit the shot")
+	assert.Equal(initialShips, shipCount+1, "Ship count should have been reduced by 1")
+	assert.Equal(HIT, board.State[hitRow][hitCol], "It should have updated .state with hit")
 
 	for row := 0; row < board.Size; row++ {
 		for col := 0; col < board.Size; col++ {
-			if row != hitRow && col != hitCol && board.State[row][col] == HIT {
-				t.Errorf("It should not have change .state of other placements")
+			if row != hitRow && col != hitCol {
+				assert.NotEqual(
+					HIT,
+					board.State[row][col],
+					"It should not have change 'state' property of other placements",
+				)
 			}
 		}
 	}

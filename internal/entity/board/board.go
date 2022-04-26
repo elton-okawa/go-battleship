@@ -12,10 +12,10 @@ type Board struct {
 }
 
 const (
-	EMPTY = 0
-	HIT   = 1
-	MISS  = 2
-	SHIP  = 3
+	EMPTY uint8 = 0
+	HIT   uint8 = 1
+	MISS  uint8 = 2
+	SHIP  uint8 = 3
 )
 
 func New(size, shipCount int) *Board {
