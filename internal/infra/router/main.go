@@ -2,13 +2,15 @@ package router
 
 import (
 	"elton-okawa/battleship/internal/entity/jwttoken"
-	"elton-okawa/battleship/internal/infra/database"
 	"elton-okawa/battleship/internal/infra/database/dbaccount"
-	"elton-okawa/battleship/internal/interface_adapter/controller"
+	"elton-okawa/battleship/internal/infra/database/dbgamerequest"
+	"elton-okawa/battleship/internal/infra/database/dbgamestate"
+	"elton-okawa/battleship/internal/infra/database/dbplayer"
 	"elton-okawa/battleship/internal/interface_adapter/controller/controlaccount"
+	"elton-okawa/battleship/internal/interface_adapter/controller/controlgame"
 	"elton-okawa/battleship/internal/interface_adapter/presenter/rest"
-	"elton-okawa/battleship/internal/usecase/game"
 	"elton-okawa/battleship/internal/usecase/ucaccount"
+	"elton-okawa/battleship/internal/usecase/ucgame"
 	"errors"
 	"fmt"
 	"os"
@@ -35,11 +37,14 @@ var skipAuthPathPatterns = map[string][]string{
 
 type BattleshipImpl struct {
 	accounts controlaccount.Controller
-	games    controller.GamesController
+	games    controlgame.Controller
 }
 
 type Repository struct {
-	Account ucaccount.Repository
+	Account     ucaccount.Repository
+	GameRequest ucgame.GameRequestRepository
+	GameState   ucgame.GameStateRepository
+	Player      ucgame.PlayerRepository
 }
 
 type RepositoryOption struct {
@@ -68,15 +73,20 @@ func ErrorHandler(err error, c echo.Context) {
 
 func Setup(opt Options) (*echo.Echo, *Repository) {
 	accRepo := dbaccount.New(opt.Repo.File("accounts"))
-	gameRepo := database.NewGameDao(opt.Repo.File("games"))
+	grRepo := dbgamerequest.New(opt.Repo.File("game-request"))
+	gsRepo := dbgamestate.New(opt.Repo.File("game-state"))
+	pRepo := dbplayer.New(opt.Repo.File("player"))
 
 	db := &Repository{
-		Account: accRepo,
+		Account:     accRepo,
+		GameRequest: grRepo,
+		GameState:   gsRepo,
+		Player:      pRepo,
 	}
 
 	app := BattleshipImpl{
 		accounts: controlaccount.New(ucaccount.New(accRepo)),
-		games:    controller.NewGamesController(game.NewGameUseCase(gameRepo)),
+		games:    controlgame.New(ucgame.New(gsRepo, grRepo, pRepo)),
 	}
 
 	swagger, err := GetSwagger()
