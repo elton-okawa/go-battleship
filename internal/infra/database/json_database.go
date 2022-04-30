@@ -116,7 +116,7 @@ func (jd *JsonDatabase) Get(id string, out interface{}) error {
 func (jd *JsonDatabase) FindFirstBy(property, value string, out interface{}) error {
 	data, err := jd.getData()
 	if err != nil {
-		return nil
+		return err
 	}
 
 	// TODO find a safer way to find via property
