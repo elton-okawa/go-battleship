@@ -2,13 +2,17 @@ package board
 
 import (
 	"math/rand"
+
+	"github.com/google/uuid"
 )
 
 type Board struct {
-	Placement [][]uint8
-	State     [][]uint8
-	Size      int
-	ShipCount int
+	Id               string
+	Placement        [][]uint8
+	State            [][]uint8
+	Size             int
+	InitialShipCount int
+	ShipCount        int
 }
 
 const (
@@ -23,13 +27,15 @@ func New(size, shipCount int) *Board {
 	state := emptyMap(size)
 
 	board := Board{
-		Placement: placement,
-		State:     state,
-		Size:      size,
-		ShipCount: shipCount,
+		Id:               uuid.NewString(),
+		Placement:        placement,
+		State:            state,
+		Size:             size,
+		InitialShipCount: shipCount,
+		ShipCount:        shipCount,
 	}
 
-	for i := 0; i < board.ShipCount; i++ {
+	for i := 0; i < board.InitialShipCount; i++ {
 		placeShip(&board, SHIP)
 	}
 
