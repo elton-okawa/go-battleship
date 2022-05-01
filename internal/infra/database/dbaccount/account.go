@@ -8,6 +8,7 @@ import (
 type Account struct {
 	Id           string `json:"id"`
 	Login        string `json:"login"`
+	PlayerId     string `json:"playerId"`
 	PasswordHash string `json:"password"`
 }
 
@@ -33,6 +34,7 @@ func (db Repository) Save(e account.Account) error {
 	account := Account{
 		Id:           e.Id,
 		Login:        e.Login,
+		PlayerId:     e.PlayerId,
 		PasswordHash: e.PasswordHash,
 	}
 
@@ -46,6 +48,7 @@ func (db Repository) Get(login string) (account.Account, error) {
 	acc := account.Account{
 		Id:           model.Id,
 		Login:        model.Login,
+		PlayerId:     model.PlayerId,
 		PasswordHash: model.PasswordHash,
 	}
 

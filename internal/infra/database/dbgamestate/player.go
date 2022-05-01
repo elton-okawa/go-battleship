@@ -7,9 +7,9 @@ import (
 )
 
 type Player struct {
-	Id        string `json:"id"`
-	AccountId string `json:"accountId"`
-	BoardId   string `json:"boardId"`
+	Id      string `json:"id"`
+	Name    string `json:"name"`
+	BoardId string `json:"boardId"`
 }
 
 func (p *Player) GetId() string {
@@ -22,9 +22,9 @@ func (p *Player) SetId(id string) {
 
 func playerEntityToDb(p player.Player) Player {
 	return Player{
-		Id:        p.Id,
-		AccountId: p.Account.Id,
-		BoardId:   p.Board.Id,
+		Id:      p.Id,
+		Name:    p.Name,
+		BoardId: p.Board.Id,
 	}
 }
 
