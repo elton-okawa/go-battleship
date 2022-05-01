@@ -9,6 +9,7 @@ type Account struct {
 	Id           string
 	Login        string
 	PasswordHash string
+	PlayerId     string
 }
 
 func New(login, password string) (Account, error) {
@@ -22,6 +23,7 @@ func New(login, password string) (Account, error) {
 		Id:           uuid.NewString(),
 		Login:        login,
 		PasswordHash: string(hashedBytes),
+		PlayerId:     uuid.NewString(),
 	}
 
 	return acc, nil
