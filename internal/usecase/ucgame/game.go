@@ -1,6 +1,7 @@
 package ucgame
 
 import (
+	"elton-okawa/battleship/internal/entity"
 	"elton-okawa/battleship/internal/entity/board"
 	"elton-okawa/battleship/internal/entity/gamerequest"
 	"elton-okawa/battleship/internal/entity/gamestate"
@@ -29,18 +30,22 @@ type GameRequestRepository interface {
 	Save(gs *gamerequest.GameRequest) error
 }
 
-func (uc UseCase) Start(gob GameOutputBoundary, pId string) {
+func (uc UseCase) Start(gob GameOutputBoundary, pId string) error {
 	// TODO do not create a new game if player already have a request
 	// ownGr, err := uc.grRepo.FindOwn(pId)
 	// if err != nil {
 	// 	// handle error
 	// }
 
-	// TODO matchmaking
+	// TODO better matchmaking
 	gr, err := uc.grRepo.FindPending()
-	if err != nil {
-		fmt.Printf("error finding gs: %v\n", err)
-		// handle error
+	if err != nil && !errors.Is(err, entity.ErrNotFound) {
+		useCaseError := ucerror.New(
+			"error while reading game request",
+			ucerror.ServerError,
+			err,
+		)
+		return useCaseError
 	}
 
 	if gr != nil {
@@ -48,7 +53,14 @@ func (uc UseCase) Start(gob GameOutputBoundary, pId string) {
 		gr.Pending = false
 
 		// TODO transaction?
-		uc.grRepo.Save(gr)
+		if err := uc.grRepo.Save(gr); err != nil {
+			saveGRequestErr := ucerror.New(
+				"error while saving game request",
+				ucerror.ServerError,
+				err,
+			)
+			return saveGRequestErr
+		}
 
 		gs := gamestate.New(
 			uuid.NewString(),
@@ -61,11 +73,24 @@ func (uc UseCase) Start(gob GameOutputBoundary, pId string) {
 			false,
 		)
 
-		// handle error
-		uc.gsRepo.Save(gs)
+		if err := uc.gsRepo.Save(gs); err != nil {
+			saveGStateErr := ucerror.New(
+				"error while saving game state",
+				ucerror.ServerError,
+				err,
+			)
+			return saveGStateErr
+		}
 	} else {
 		gr := gamerequest.New(uuid.NewString(), pId, "", true)
-		uc.grRepo.Save(&gr)
+		if err := uc.grRepo.Save(&gr); err != nil {
+			saveGRequestErr := ucerror.New(
+				"error while saving game request",
+				ucerror.ServerError,
+				err,
+			)
+			return saveGRequestErr
+		}
 	}
 
 	// if err := g.persistence.SaveGameState(&state); err != nil {
@@ -73,6 +98,8 @@ func (uc UseCase) Start(gob GameOutputBoundary, pId string) {
 	// } else {
 	// 	gob.StartResult(&state, nil)
 	// }
+
+	return nil
 }
 
 // Receives game id and row/col to shoot

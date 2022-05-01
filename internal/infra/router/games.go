@@ -9,8 +9,11 @@ import (
 func (b *BattleshipImpl) CreateGame(ctx echo.Context) error {
 	restPresenter := rest.New()
 
-	b.games.PostGame(restPresenter, ctx)
-	// return restPresenter.Error()
+	if err := b.games.PostGame(restPresenter, ctx); err != nil {
+		return err
+	}
+
+	// return presenter body and code
 	return nil
 }
 

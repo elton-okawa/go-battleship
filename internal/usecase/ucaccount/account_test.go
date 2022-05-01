@@ -78,7 +78,7 @@ func TestCreateAccount_SaveError(t *testing.T) {
 
 	var e *ucerror.Error
 	if assert.ErrorAs(err, &e, "use case error") {
-		assert.Equal(e.Code, ucerror.GenericError, "use case error code")
+		assert.Equal(e.Code, ucerror.ServerError, "use case error code")
 	}
 }
 

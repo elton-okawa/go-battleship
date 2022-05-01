@@ -1,8 +1,8 @@
 package database
 
 import (
+	"elton-okawa/battleship/internal/entity"
 	"encoding/json"
-	"errors"
 	"io/ioutil"
 	"os"
 
@@ -24,8 +24,6 @@ type Entity interface {
 	GetId() string
 	SetId(string)
 }
-
-var ErrNotFound = errors.New("Entity not found")
 
 func ensureFile(filepath string) error {
 	if _, err := os.Stat(filepath); err != nil {
@@ -105,7 +103,7 @@ func (jd *JsonDatabase) Get(id string, out interface{}) error {
 	}
 
 	if data[id] == nil {
-		return ErrNotFound
+		return entity.ErrNotFound
 	}
 
 	// TODO find a better way to convert map[string]interface{} -> struct
@@ -130,5 +128,5 @@ func (jd *JsonDatabase) FindFirstBy(property string, value, out interface{}) err
 		}
 	}
 
-	return ErrNotFound
+	return entity.ErrNotFound
 }

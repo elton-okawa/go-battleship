@@ -12,7 +12,7 @@ type HttpError struct {
 }
 
 var CodeToHttp = map[int]HttpError{
-	ucerror.GenericError: {
+	ucerror.ServerError: {
 		title: http.StatusText(http.StatusInternalServerError),
 		code:  http.StatusInternalServerError,
 	},

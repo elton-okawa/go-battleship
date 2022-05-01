@@ -29,10 +29,7 @@ func (gc Controller) PostGame(p ucgame.GameOutputBoundary, ctx controller.Contex
 		// TODO return error of invalid claim
 	}
 
-	gc.useCase.Start(p, claim.Player)
-
-	// TODO return usecase error
-	return nil
+	return gc.useCase.Start(p, claim.Player)
 }
 
 func (gc Controller) Shoot(p ucgame.GameOutputBoundary, id string, row int, col int) {

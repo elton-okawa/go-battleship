@@ -33,7 +33,7 @@ func (a UseCase) CreateAccount(res Output, login, password string) error {
 	if err != nil {
 		useCaseError := ucerror.New(
 			fmt.Sprintf("Failed to create a new account for '%s'", login),
-			ucerror.GenericError,
+			ucerror.ServerError,
 			err,
 		)
 		return useCaseError
@@ -42,7 +42,7 @@ func (a UseCase) CreateAccount(res Output, login, password string) error {
 	if err = a.repo.Save(acc); err != nil {
 		useCaseError := ucerror.New(
 			fmt.Sprintf("Failed to save a new account for '%s'", login),
-			ucerror.GenericError,
+			ucerror.ServerError,
 			err,
 		)
 		return useCaseError
@@ -76,7 +76,7 @@ func (a UseCase) Login(res Output, login, password string) error {
 	if token, expires, err := jwttoken.New(login, acc.PlayerId); err != nil {
 		useCaseError := ucerror.New(
 			"Error while creating JWT Token",
-			ucerror.GenericError,
+			ucerror.ServerError,
 			err,
 		)
 		return useCaseError
