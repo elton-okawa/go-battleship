@@ -10,7 +10,7 @@ import (
 func TestNew(t *testing.T) {
 	assert := assert.New(t)
 
-	token, expiresAt, err := New("username")
+	token, expiresAt, err := New("username", "player-id")
 
 	assert.Nilf(err, "unexpected error %v", err)
 	assert.GreaterOrEqual(expiresAt, time.Now().Add(30*time.Minute).Unix(), "token should be valid for at least 30 min")
@@ -21,15 +21,16 @@ func TestNew(t *testing.T) {
 func TestNewAndValidate(t *testing.T) {
 	assert := assert.New(t)
 
-	token, _, err := New("username")
+	token, _, err := New("username", "player-id")
 	assert.Nilf(err, "unexpected error %v", err)
 
 	claim, err := Validate(token)
 
 	expected := Claim{
-		Iss: "Golang Battleship",
-		Sub: "username",
-		Exp: claim.Exp,
+		Iss:    "Golang Battleship",
+		Sub:    "username",
+		Player: "player-id",
+		Exp:    claim.Exp,
 	}
 
 	assert.Nilf(err, "unexpected error %v", err)
