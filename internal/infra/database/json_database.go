@@ -113,7 +113,7 @@ func (jd *JsonDatabase) Get(id string, out interface{}) error {
 	return json.Unmarshal(v, out)
 }
 
-func (jd *JsonDatabase) FindFirstBy(property, value string, out interface{}) error {
+func (jd *JsonDatabase) FindFirstBy(property string, value, out interface{}) error {
 	data, err := jd.getData()
 	if err != nil {
 		return err

@@ -30,9 +30,19 @@ func New(filepath string) Repository {
 	}
 }
 
-func (db Repository) FindPending(challenger string) (*gamerequest.GameRequest, error) {
+func (db Repository) FindOwn(owner string) (*gamerequest.GameRequest, error) {
 	var data *GameRequest
-	if err := db.driver.FindFirstBy("challengerId", challenger, data); err != nil {
+	if err := db.driver.FindFirstBy("ownerId", owner, data); err != nil {
+		return nil, err
+	}
+
+	gr := gamerequest.New(data.Id, data.OwnerId, data.ChallengerId, data.Pending)
+	return &gr, nil
+}
+
+func (db Repository) FindPending() (*gamerequest.GameRequest, error) {
+	var data GameRequest
+	if err := db.driver.FindFirstBy("pending", true, &data); err != nil {
 		return nil, err
 	}
 

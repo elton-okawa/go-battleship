@@ -7,8 +7,10 @@ import (
 
 type GameState struct {
 	Id           string `json:"id"`
-	PlayerOneId  string `json:"playerOneId"`
-	PlayerTwoId  string `json:"playerTwoId"`
+	AccountOneId string `json:"accountOneId"`
+	AccountTwoId string `json:"accountTwoId"`
+	BoardOneId   string `json:"boardOneId"`
+	BoardTwoId   string `json:"boardTwoId"`
 	PlayerTurnId string `json:"turnId"`
 	Finished     bool   `json:"finished"`
 }
@@ -51,21 +53,20 @@ func (db Repository) Get(id string) (*gamestate.GameState, error) {
 func (db Repository) Save(gs gamestate.GameState) error {
 	data := GameState{
 		Id:           gs.Id,
-		PlayerOneId:  gs.PlayerOne.Id,
-		PlayerTwoId:  gs.PlayerTwo.Id,
+		AccountOneId: gs.AccountOneId,
+		AccountTwoId: gs.AccountTwoId,
+		BoardOneId:   gs.BoardOne.Id,
+		BoardTwoId:   gs.BoardTwo.Id,
 		PlayerTurnId: gs.PlayerTurnId,
 		Finished:     gs.Finished,
 	}
 
-	pOne := playerEntityToDb(gs.PlayerOne)
-	bOne := boardEntityToDb(gs.PlayerOne.Board)
-
-	pTwo := playerEntityToDb(gs.PlayerTwo)
-	bTwo := boardEntityToDb(gs.PlayerTwo.Board)
+	bOne := boardEntityToDb(gs.BoardOne)
+	bTwo := boardEntityToDb(gs.BoardTwo)
 
 	hist := historyEntityToDb(gs.Id, gs.History)
 
-	entities := []database.Entity{&data, &pOne, &bOne, &pTwo, &bTwo}
+	entities := []database.Entity{&data, &bOne, &bTwo}
 	for _, h := range hist {
 		entities = append(entities, &h)
 	}

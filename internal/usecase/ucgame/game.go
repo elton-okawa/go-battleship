@@ -1,9 +1,9 @@
 package ucgame
 
 import (
+	"elton-okawa/battleship/internal/entity/board"
 	"elton-okawa/battleship/internal/entity/gamerequest"
 	"elton-okawa/battleship/internal/entity/gamestate"
-	"elton-okawa/battleship/internal/entity/player"
 	"elton-okawa/battleship/internal/usecase/ucerror"
 	"errors"
 	"fmt"
@@ -11,33 +11,35 @@ import (
 	"github.com/google/uuid"
 )
 
-func New(gsRepo GameStateRepository, grRepo GameRequestRepository, pRepo PlayerRepository) UseCase {
+func New(gsRepo GameStateRepository, grRepo GameRequestRepository) UseCase {
 	return UseCase{
 		gsRepo: gsRepo,
 		grRepo: grRepo,
-		pRepo:  pRepo,
 	}
 }
 
 type UseCase struct {
 	gsRepo GameStateRepository
 	grRepo GameRequestRepository
-	pRepo  PlayerRepository
 }
 
 type GameRequestRepository interface {
-	FindPending(challenger string) (*gamerequest.GameRequest, error)
+	FindOwn(owner string) (*gamerequest.GameRequest, error)
+	FindPending() (*gamerequest.GameRequest, error)
 	Save(gs *gamerequest.GameRequest) error
 }
 
-type PlayerRepository interface {
-	Get(id string) (player.Player, error)
-}
-
 func (uc UseCase) Start(gob GameOutputBoundary, pId string) {
+	// TODO do not create a new game if player already have a request
+	// ownGr, err := uc.grRepo.FindOwn(pId)
+	// if err != nil {
+	// 	// handle error
+	// }
+
 	// TODO matchmaking
-	gr, err := uc.grRepo.FindPending(pId)
+	gr, err := uc.grRepo.FindPending()
 	if err != nil {
+		fmt.Printf("error finding gs: %v\n", err)
 		// handle error
 	}
 
@@ -48,11 +50,16 @@ func (uc UseCase) Start(gob GameOutputBoundary, pId string) {
 		// TODO transaction?
 		uc.grRepo.Save(gr)
 
-		// handle error
-		pOne, _ := uc.pRepo.Get(gr.OwnerId)
-		pTwo, _ := uc.pRepo.Get(gr.ChallengerId)
-
-		gs := gamestate.New(uuid.NewString(), pOne, pTwo, []gamestate.History{}, pOne.Id, false)
+		gs := gamestate.New(
+			uuid.NewString(),
+			gr.OwnerId,
+			gr.ChallengerId,
+			board.New(8, 3),
+			board.New(8, 3),
+			[]gamestate.History{},
+			gr.OwnerId,
+			false,
+		)
 
 		// handle error
 		uc.gsRepo.Save(gs)

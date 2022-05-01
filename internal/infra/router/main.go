@@ -5,7 +5,6 @@ import (
 	"elton-okawa/battleship/internal/infra/database/dbaccount"
 	"elton-okawa/battleship/internal/infra/database/dbgamerequest"
 	"elton-okawa/battleship/internal/infra/database/dbgamestate"
-	"elton-okawa/battleship/internal/infra/database/dbplayer"
 	"elton-okawa/battleship/internal/interface_adapter/controller/controlaccount"
 	"elton-okawa/battleship/internal/interface_adapter/controller/controlgame"
 	"elton-okawa/battleship/internal/interface_adapter/presenter/rest"
@@ -44,7 +43,6 @@ type Repository struct {
 	Account     ucaccount.Repository
 	GameRequest ucgame.GameRequestRepository
 	GameState   ucgame.GameStateRepository
-	Player      ucgame.PlayerRepository
 }
 
 type RepositoryOption struct {
@@ -75,18 +73,16 @@ func Setup(opt Options) (*echo.Echo, *Repository) {
 	accRepo := dbaccount.New(opt.Repo.File("accounts"))
 	grRepo := dbgamerequest.New(opt.Repo.File("game-request"))
 	gsRepo := dbgamestate.New(opt.Repo.File("game-state"))
-	pRepo := dbplayer.New(opt.Repo.File("player"))
 
 	db := &Repository{
 		Account:     accRepo,
 		GameRequest: grRepo,
 		GameState:   gsRepo,
-		Player:      pRepo,
 	}
 
 	app := BattleshipImpl{
 		accounts: controlaccount.New(ucaccount.New(accRepo)),
-		games:    controlgame.New(ucgame.New(gsRepo, grRepo, pRepo)),
+		games:    controlgame.New(ucgame.New(gsRepo, grRepo)),
 	}
 
 	swagger, err := GetSwagger()

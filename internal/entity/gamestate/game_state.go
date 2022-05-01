@@ -1,23 +1,27 @@
 package gamestate
 
 import (
-	"elton-okawa/battleship/internal/entity/player"
+	"elton-okawa/battleship/internal/entity/board"
 )
 
 type GameState struct {
 	Id           string
-	PlayerOne    player.Player
-	PlayerTwo    player.Player
+	AccountOneId string
+	AccountTwoId string
+	BoardOne     *board.Board
+	BoardTwo     *board.Board
 	History      []History
 	PlayerTurnId string
 	Finished     bool
 }
 
-func New(id string, one, two player.Player, history []History, turn string, finished bool) GameState {
+func New(id, accOneId, accTwoId string, bOne, bTwo *board.Board, history []History, turn string, finished bool) GameState {
 	return GameState{
 		Id:           id,
-		PlayerOne:    one,
-		PlayerTwo:    two,
+		AccountOneId: accOneId,
+		AccountTwoId: accTwoId,
+		BoardOne:     bOne,
+		BoardTwo:     bTwo,
 		History:      history,
 		PlayerTurnId: turn,
 		Finished:     finished,
