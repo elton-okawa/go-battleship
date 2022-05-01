@@ -31,8 +31,8 @@ func New(filepath string) Repository {
 }
 
 func (db Repository) FindOwn(owner string) (*gamerequest.GameRequest, error) {
-	var data *GameRequest
-	if err := db.driver.FindFirstBy("ownerId", owner, data); err != nil {
+	var data GameRequest
+	if err := db.driver.FindFirstBy("ownerId", owner, &data); err != nil {
 		return nil, err
 	}
 

@@ -31,4 +31,9 @@ var CodeToHttp = map[int]HttpError{
 		code:    http.StatusUnauthorized,
 		message: "Incorrect username or password",
 	},
+	ucerror.ExistingGameRequest: {
+		title:   http.StatusText(http.StatusBadRequest),
+		code:    http.StatusBadRequest,
+		message: "Cannot create a game while you already have one waiting for an opponent",
+	},
 }

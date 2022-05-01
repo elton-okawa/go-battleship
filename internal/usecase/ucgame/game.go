@@ -31,11 +31,22 @@ type GameRequestRepository interface {
 }
 
 func (uc UseCase) Start(gob GameOutputBoundary, pId string) error {
-	// TODO do not create a new game if player already have a request
-	// ownGr, err := uc.grRepo.FindOwn(pId)
-	// if err != nil {
-	// 	// handle error
-	// }
+	ownRequest, ownReqErr := uc.grRepo.FindOwn(pId)
+	if ownRequest != nil {
+		useCaseError := ucerror.New(
+			"cannot create a new game while you already have one waiting for an opponent",
+			ucerror.ExistingGameRequest,
+			nil,
+		)
+		return useCaseError
+	} else if ownReqErr != nil && !errors.Is(ownReqErr, entity.ErrNotFound) {
+		useCaseError := ucerror.New(
+			"error while finding own game request",
+			ucerror.ServerError,
+			ownReqErr,
+		)
+		return useCaseError
+	}
 
 	// TODO better matchmaking
 	gr, err := uc.grRepo.FindPending()
