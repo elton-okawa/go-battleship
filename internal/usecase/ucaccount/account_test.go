@@ -61,6 +61,7 @@ func TestCreateAccount(t *testing.T) {
 	assert.Nilf(err, "unexpected error %v", err)
 	assert.Equal(username, db.acc.Login, "persisted account equal")
 	assert.NotEmpty(db.acc.PasswordHash, "persisted account must have a password hash")
+	assert.NotEmpty(db.acc.PlayerId, "persisted account must have a player id")
 
 	assert.NotEmpty(out.acc.Id, "output id must not be empty")
 	assert.Equal(username, out.acc.Login, "output login must be equal")

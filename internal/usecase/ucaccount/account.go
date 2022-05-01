@@ -73,7 +73,7 @@ func (a UseCase) Login(res Output, login, password string) error {
 		return useCaseError
 	}
 
-	if token, expires, err := jwttoken.New(login); err != nil {
+	if token, expires, err := jwttoken.New(login, acc.PlayerId); err != nil {
 		useCaseError := ucerror.New(
 			"Error while creating JWT Token",
 			ucerror.GenericError,
