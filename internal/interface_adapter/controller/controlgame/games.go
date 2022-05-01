@@ -1,6 +1,8 @@
 package controlgame
 
 import (
+	"elton-okawa/battleship/internal/entity/jwttoken"
+	"elton-okawa/battleship/internal/interface_adapter/controller"
 	"elton-okawa/battleship/internal/usecase/ucgame"
 	"fmt"
 )
@@ -19,8 +21,18 @@ func (gc Controller) GetGame(id string) {
 	fmt.Println("Get games")
 }
 
-func (gc Controller) PostGame(p ucgame.GameOutputBoundary) {
-	gc.useCase.Start(p, "")
+func (gc Controller) PostGame(p ucgame.GameOutputBoundary, ctx controller.Context) error {
+	claim, ok := ctx.Get("user").(jwttoken.Claim)
+	if !ok {
+		fmt.Printf("%+v\n", ctx.Get("user"))
+		fmt.Println("error")
+		// TODO return error of invalid claim
+	}
+
+	gc.useCase.Start(p, claim.Player)
+
+	// TODO return usecase error
+	return nil
 }
 
 func (gc Controller) Shoot(p ucgame.GameOutputBoundary, id string, row int, col int) {

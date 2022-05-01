@@ -1,13 +1,15 @@
 package router
 
 import (
+	"elton-okawa/battleship/internal/interface_adapter/presenter/rest"
+
 	"github.com/labstack/echo/v4"
 )
 
 func (b *BattleshipImpl) CreateGame(ctx echo.Context) error {
-	// restPresenter := rest.New()
+	restPresenter := rest.New()
 
-	// b.games.PostGame(restPresenter)
+	b.games.PostGame(restPresenter, ctx)
 	// return restPresenter.Error()
 	return nil
 }
