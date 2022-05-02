@@ -3,6 +3,7 @@ package rest
 import (
 	"elton-okawa/battleship/internal/entity/board"
 	"elton-okawa/battleship/internal/entity/gamestate"
+	"net/http"
 )
 
 type shootResponse struct {
@@ -11,17 +12,11 @@ type shootResponse struct {
 	Board board.Board `json:"board"`
 }
 
-func (rp RestApiPresenter) StartResult(gs *gamestate.GameState, err error) {
-	// if err != nil {
-	// 	rp.MapError(err)
-	// 	return
-	// }
-
-	// // TODO map to a real response
-	// rp.responseBody(http.StatusCreated, gs.Board.String())
+func (rp *RestApiPresenter) StartResult() {
+	rp.response(http.StatusCreated)
 }
 
-func (rp RestApiPresenter) ShootResult(gs *gamestate.GameState, hit bool, ships int, err error) {
+func (rp *RestApiPresenter) ShootResult(gs *gamestate.GameState, hit bool, ships int, err error) {
 	// if err != nil {
 	// 	rp.MapError(err)
 	// 	return

@@ -30,6 +30,16 @@ type GameRequestRepository interface {
 	Save(gs *gamerequest.GameRequest) error
 }
 
+type GameStateRepository interface {
+	Save(gamestate.GameState) error
+	Get(string) (*gamestate.GameState, error)
+}
+
+type GameOutputBoundary interface {
+	StartResult()
+	ShootResult(*gamestate.GameState, bool, int, error)
+}
+
 func (uc UseCase) Start(gob GameOutputBoundary, pId string) error {
 	ownRequest, ownReqErr := uc.grRepo.FindOwn(pId)
 	if ownRequest != nil {
@@ -104,12 +114,7 @@ func (uc UseCase) Start(gob GameOutputBoundary, pId string) error {
 		}
 	}
 
-	// if err := g.persistence.SaveGameState(&state); err != nil {
-	// 	gob.StartResult(nil, err)
-	// } else {
-	// 	gob.StartResult(&state, nil)
-	// }
-
+	gob.StartResult()
 	return nil
 }
 

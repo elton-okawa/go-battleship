@@ -13,8 +13,7 @@ func (b *BattleshipImpl) CreateGame(ctx echo.Context) error {
 		return err
 	}
 
-	// return presenter body and code
-	return nil
+	return ctx.NoContent(restPresenter.Code())
 }
 
 func (b *BattleshipImpl) GameShoot(ctx echo.Context, id string) error {
