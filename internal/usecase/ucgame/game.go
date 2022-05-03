@@ -49,7 +49,7 @@ func (uc UseCase) Start(gob GameOutputBoundary, pId string) error {
 			nil,
 		)
 		return useCaseError
-	} else if ownReqErr != nil && !errors.Is(ownReqErr, entity.ErrNotFound) {
+	} else if !errors.Is(ownReqErr, entity.ErrNotFound) {
 		useCaseError := ucerror.New(
 			"error while finding own game request",
 			ucerror.ServerError,
