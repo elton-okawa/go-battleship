@@ -35,36 +35,35 @@ type MockGameRequestRepo struct {
 	pendingNotFound  bool
 	pendingReadError bool
 	saveError        bool
-	saveData         *gamerequest.GameRequest
+	saveData         gamerequest.GameRequest
 	getData          gamerequest.GameRequest
 }
 
-func (r *MockGameRequestRepo) FindOwn(owner string) (*gamerequest.GameRequest, error) {
+func (r *MockGameRequestRepo) FindOwn(owner string) (gamerequest.GameRequest, error) {
 	if r.ownNotFound {
-		return nil, entity.ErrNotFound
+		return gamerequest.GameRequest{}, entity.ErrNotFound
 	}
 
 	if r.ownReadError {
-		return nil, errors.New("read own game request error")
+		return gamerequest.GameRequest{}, errors.New("read own game request error")
 	}
 
-	return &r.getData, nil
+	return r.getData, nil
 }
 
-func (r *MockGameRequestRepo) FindPending() (*gamerequest.GameRequest, error) {
+func (r *MockGameRequestRepo) FindPending() (gamerequest.GameRequest, error) {
 	if r.pendingNotFound {
-		return nil, entity.ErrNotFound
+		return gamerequest.GameRequest{}, entity.ErrNotFound
 	}
 
 	if r.pendingReadError {
-		return nil, errors.New("read pending game request error")
+		return gamerequest.GameRequest{}, errors.New("read pending game request error")
 	}
 
-	// data := r.getData
-	return &r.getData, nil
+	return r.getData, nil
 }
 
-func (r *MockGameRequestRepo) Save(gs *gamerequest.GameRequest) error {
+func (r *MockGameRequestRepo) Save(gs gamerequest.GameRequest) error {
 	if r.saveError {
 		return errors.New("save game request error")
 	}

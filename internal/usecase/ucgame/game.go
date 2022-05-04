@@ -25,9 +25,9 @@ type UseCase struct {
 }
 
 type GameRequestRepository interface {
-	FindOwn(owner string) (*gamerequest.GameRequest, error)
-	FindPending() (*gamerequest.GameRequest, error)
-	Save(gs *gamerequest.GameRequest) error
+	FindOwn(owner string) (gamerequest.GameRequest, error)
+	FindPending() (gamerequest.GameRequest, error)
+	Save(gs gamerequest.GameRequest) error
 }
 
 type GameStateRepository interface {
@@ -41,8 +41,8 @@ type GameOutputBoundary interface {
 }
 
 func (uc UseCase) Start(gob GameOutputBoundary, pId string) error {
-	ownRequest, ownReqErr := uc.grRepo.FindOwn(pId)
-	if ownRequest != nil {
+	_, ownReqErr := uc.grRepo.FindOwn(pId)
+	if ownReqErr == nil {
 		useCaseError := ucerror.New(
 			"cannot create a new game while you already have one waiting for an opponent",
 			ucerror.ExistingGameRequest,
@@ -60,20 +60,12 @@ func (uc UseCase) Start(gob GameOutputBoundary, pId string) error {
 
 	// TODO better matchmaking
 	gr, err := uc.grRepo.FindPending()
-	if err != nil && !errors.Is(err, entity.ErrNotFound) {
-		useCaseError := ucerror.New(
-			"error while reading game request",
-			ucerror.ServerError,
-			err,
-		)
-		return useCaseError
-	}
-
-	if gr != nil {
-		gr.ChallengerId = pId
-		gr.Pending = false
-
-		// TODO transaction?
+	if err == nil {
+		if err := uc.fulfillGameRequest(gr, pId); err != nil {
+			return err
+		}
+	} else if errors.Is(err, entity.ErrNotFound) {
+		gr := gamerequest.New(uuid.NewString(), pId, "", true)
 		if err := uc.grRepo.Save(gr); err != nil {
 			saveGRequestErr := ucerror.New(
 				"error while saving game request",
@@ -82,39 +74,53 @@ func (uc UseCase) Start(gob GameOutputBoundary, pId string) error {
 			)
 			return saveGRequestErr
 		}
-
-		gs := gamestate.New(
-			uuid.NewString(),
-			gr.OwnerId,
-			gr.ChallengerId,
-			board.New(8, 3),
-			board.New(8, 3),
-			[]gamestate.History{},
-			gr.OwnerId,
-			false,
-		)
-
-		if err := uc.gsRepo.Save(gs); err != nil {
-			saveGStateErr := ucerror.New(
-				"error while saving game state",
-				ucerror.ServerError,
-				err,
-			)
-			return saveGStateErr
-		}
 	} else {
-		gr := gamerequest.New(uuid.NewString(), pId, "", true)
-		if err := uc.grRepo.Save(&gr); err != nil {
-			saveGRequestErr := ucerror.New(
-				"error while saving game request",
-				ucerror.ServerError,
-				err,
-			)
-			return saveGRequestErr
-		}
+		useCaseError := ucerror.New(
+			"error while reading game request",
+			ucerror.ServerError,
+			err,
+		)
+		return useCaseError
 	}
 
 	gob.StartResult()
+	return nil
+}
+
+func (uc UseCase) fulfillGameRequest(gr gamerequest.GameRequest, pId string) error {
+	gr.ChallengerId = pId
+	gr.Pending = false
+
+	// TODO transaction?
+	if err := uc.grRepo.Save(gr); err != nil {
+		saveGRequestErr := ucerror.New(
+			"error while saving game request",
+			ucerror.ServerError,
+			err,
+		)
+		return saveGRequestErr
+	}
+
+	gs := gamestate.New(
+		uuid.NewString(),
+		gr.OwnerId,
+		gr.ChallengerId,
+		board.New(8, 3),
+		board.New(8, 3),
+		[]gamestate.History{},
+		gr.OwnerId,
+		false,
+	)
+
+	if err := uc.gsRepo.Save(gs); err != nil {
+		saveGStateErr := ucerror.New(
+			"error while saving game state",
+			ucerror.ServerError,
+			err,
+		)
+		return saveGStateErr
+	}
+
 	return nil
 }
 
