@@ -1,12 +1,8 @@
 package main
 
-import (
-	"elton-okawa/battleship/internal/usecase/game"
-)
-
 type Start struct {
-	persistence game.GameStatePersistence
-	presenter   game.GameOutputBoundary
+	// persistence game.GameStatePersistence
+	// presenter   game.GameOutputBoundary
 }
 
 func (s *Start) Description() string {
@@ -18,8 +14,8 @@ func (s *Start) Parse([]string) error {
 }
 
 func (s *Start) Execute() (bool, error) {
-	game := game.NewGameUseCase(s.persistence)
-	game.Start(s.presenter)
+	// game := game.NewGameUseCase(s.persistence)
+	// game.Start(s.presenter)
 
 	return false, nil
 }

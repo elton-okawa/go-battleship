@@ -1,17 +1,16 @@
 package main
 
 import (
-	"elton-okawa/battleship/internal/usecase/game"
 	"errors"
 	"strconv"
 )
 
 type Shoot struct {
-	persistence game.GameStatePersistence
-	presenter   game.GameOutputBoundary
-	row         int
-	col         int
-	id          string
+	// persistence game.GameStatePersistence
+	// presenter   game.GameOutputBoundary
+	row int
+	col int
+	id  string
 }
 
 func (s *Shoot) Description() string {
@@ -43,10 +42,11 @@ func (s *Shoot) Parse(args []string) error {
 }
 
 func (s *Shoot) Execute() (bool, error) {
-	game := game.NewGameUseCase(s.persistence)
-	game.Shoot(s.presenter, s.id, s.row, s.col)
+	return false, nil
+	// game := game.NewGameUseCase(s.persistence)
+	// game.Shoot(s.presenter, s.id, s.row, s.col)
 
-	return true, nil
+	// return true, nil
 	// if err != nil {
 	// 	return false, err
 	// } else {

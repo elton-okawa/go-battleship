@@ -1,7 +1,7 @@
 package main
 
 import (
-	"elton-okawa/battleship/internal/infra/database"
+	"elton-okawa/battleship/internal/infra/database/dbgamestate"
 	"elton-okawa/battleship/internal/interface_adapter/presenter"
 )
 
@@ -12,15 +12,15 @@ type Command interface {
 }
 
 var cmdPresenter = &presenter.CommandLinePresenter{}
-var cmdPersistence = &database.GameDao{}
+var cmdPersistence = &dbgamestate.Repository{}
 
 var Commands = map[string]Command{
-	"start": &Start{
-		persistence: cmdPersistence,
-		presenter:   cmdPresenter,
-	},
-	"shoot": &Shoot{
-		persistence: cmdPersistence,
-		presenter:   cmdPresenter,
-	},
+	// "start": &Start{
+	// 	persistence: cmdPersistence,
+	// 	presenter:   cmdPresenter,
+	// },
+	// "shoot": &Shoot{
+	// 	persistence: cmdPersistence,
+	// 	presenter:   cmdPresenter,
+	// },
 }
