@@ -130,3 +130,26 @@ func (jd *JsonDatabase) FindFirstBy(property string, value, out interface{}) err
 
 	return entity.ErrNotFound
 }
+
+func (jd *JsonDatabase) FindAllBy(property, value string, out interface{}) error {
+	data, err := jd.getData()
+	if err != nil {
+		return err
+	}
+
+	var values []interface{}
+	// TODO find a safer way to find via property
+	for _, v := range data {
+		if entity, ok := v.(map[string]interface{}); ok {
+			if entity[property] == value {
+
+				values = append(values, v)
+			}
+		}
+	}
+
+	bytes, _ := json.Marshal(values)
+	json.Unmarshal(bytes, out)
+
+	return nil
+}
