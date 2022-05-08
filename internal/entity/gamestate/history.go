@@ -1,20 +1,20 @@
 package gamestate
 
-import "time"
-
 type Result int
 
-type History struct {
+type History []Turn
+
+type Turn struct {
 	Id           string
 	PlayerTurnId string
 	Row          int
 	Col          int
 	Hit          bool
-	Time         time.Time
+	Time         int64
 }
 
-func NewHistory(id, turnId string, row, col int, hit bool, time time.Time) History {
-	return History{
+func NewTurn(id, turnId string, row, col int, hit bool, time int64) Turn {
+	return Turn{
 		Id:           id,
 		PlayerTurnId: turnId,
 		Row:          row,

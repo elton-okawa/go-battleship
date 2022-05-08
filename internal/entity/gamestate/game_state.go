@@ -10,12 +10,12 @@ type GameState struct {
 	AccountTwoId string
 	BoardOne     *board.Board
 	BoardTwo     *board.Board
-	History      []History
+	History      []Turn
 	PlayerTurnId string
 	Finished     bool
 }
 
-func New(id, accOneId, accTwoId string, bOne, bTwo *board.Board, history []History, turn string, finished bool) GameState {
+func New(id, accOneId, accTwoId string, bOne, bTwo *board.Board, history []Turn, turn string, finished bool) GameState {
 	return GameState{
 		Id:           id,
 		AccountOneId: accOneId,

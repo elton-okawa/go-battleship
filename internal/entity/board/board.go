@@ -22,7 +22,18 @@ const (
 	SHIP  uint8 = 3
 )
 
-func New(size, shipCount int) *Board {
+func New(id string, pl, st [][]uint8, size, initialShips, ships int) *Board {
+	return &Board{
+		Id:               id,
+		Placement:        pl,
+		State:            st,
+		Size:             size,
+		InitialShipCount: initialShips,
+		ShipCount:        ships,
+	}
+}
+
+func Initialize(size, shipCount int) *Board {
 	placement := emptyMap(size)
 	state := emptyMap(size)
 

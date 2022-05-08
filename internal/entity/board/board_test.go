@@ -8,7 +8,7 @@ import (
 
 func TestNew_Size(t *testing.T) {
 	assert := assert.New(t)
-	board := New(8, 3)
+	board := Initialize(8, 3)
 
 	placementCorrect := true
 
@@ -29,7 +29,7 @@ func TestNew_Size(t *testing.T) {
 
 func TestNew_ShipCount(t *testing.T) {
 	assert := assert.New(t)
-	board := New(8, 3)
+	board := Initialize(8, 3)
 
 	count := 0
 
@@ -45,7 +45,7 @@ func TestNew_ShipCount(t *testing.T) {
 
 func TestShoot_Miss(t *testing.T) {
 	assert := assert.New(t)
-	board := New(8, 3)
+	board := Initialize(8, 3)
 	initialShips := board.ShipCount
 
 	missRow, missCol := find(board.Placement, EMPTY)
@@ -69,7 +69,7 @@ func TestShoot_Miss(t *testing.T) {
 
 func TestShoot_Hit(t *testing.T) {
 	assert := assert.New(t)
-	board := New(8, 3)
+	board := Initialize(8, 3)
 	initialShips := board.ShipCount
 
 	hitRow, hitCol := find(board.Placement, SHIP)
@@ -94,7 +94,7 @@ func TestShoot_Hit(t *testing.T) {
 func TestCanShoot(t *testing.T) {
 	assert := assert.New(t)
 
-	board := New(8, 3)
+	board := Initialize(8, 3)
 	board.State[1][0] = HIT
 	board.State[1][1] = MISS
 
