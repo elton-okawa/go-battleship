@@ -32,7 +32,7 @@ type GameRequestRepository interface {
 
 type GameStateRepository interface {
 	Save(gamestate.GameState) error
-	Get(string) (*gamestate.GameState, error)
+	Get(string) (gamestate.GameState, error)
 }
 
 type GameOutputBoundary interface {
@@ -105,9 +105,9 @@ func (uc UseCase) fulfillGameRequest(gr gamerequest.GameRequest, pId string) err
 		uuid.NewString(),
 		gr.OwnerId,
 		gr.ChallengerId,
-		board.New(8, 3),
-		board.New(8, 3),
-		[]gamestate.History{},
+		board.Initialize(8, 3),
+		board.Initialize(8, 3),
+		[]gamestate.Turn{},
 		gr.OwnerId,
 		false,
 	)

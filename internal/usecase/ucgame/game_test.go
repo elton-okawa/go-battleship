@@ -25,8 +25,8 @@ func (r *MockGameStateRepo) Save(gs gamestate.GameState) error {
 	return nil
 }
 
-func (r *MockGameStateRepo) Get(id string) (*gamestate.GameState, error) {
-	return nil, nil
+func (r *MockGameStateRepo) Get(id string) (gamestate.GameState, error) {
+	return gamestate.GameState{}, nil
 }
 
 type MockGameRequestRepo struct {

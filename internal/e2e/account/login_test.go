@@ -5,6 +5,7 @@ import (
 	"elton-okawa/battleship/internal/e2e"
 	"elton-okawa/battleship/internal/e2e/setup"
 	"elton-okawa/battleship/internal/entity/account"
+	"elton-okawa/battleship/internal/test"
 	"elton-okawa/battleship/internal/usecase/ucaccount"
 	"net/http/httptest"
 	"testing"
@@ -40,7 +41,7 @@ func (s *TestLoginSuite) SetupSuite() {
 }
 
 func (s *TestLoginSuite) SetupTest() {
-	setup.CleanupDatabase()
+	test.CleanupDatabase()
 
 	acc, _ := account.New(s.req.Login, s.req.Password)
 	s.accRepo.Save(acc)

@@ -4,6 +4,7 @@ import (
 	"context"
 	"elton-okawa/battleship/internal/e2e"
 	"elton-okawa/battleship/internal/e2e/setup"
+	"elton-okawa/battleship/internal/test"
 	"net/http/httptest"
 	"testing"
 
@@ -37,7 +38,7 @@ func (s *TestPostAccountSuite) SetupSuite() {
 }
 
 func (s *TestPostAccountSuite) SetupTest() {
-	setup.CleanupDatabase()
+	test.CleanupDatabase()
 }
 
 func (s *TestPostAccountSuite) TearDownSuite() {

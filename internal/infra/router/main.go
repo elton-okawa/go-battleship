@@ -2,6 +2,7 @@ package router
 
 import (
 	"elton-okawa/battleship/internal/entity/jwttoken"
+	"elton-okawa/battleship/internal/infra/database"
 	"elton-okawa/battleship/internal/infra/database/dbaccount"
 	"elton-okawa/battleship/internal/infra/database/dbgamerequest"
 	"elton-okawa/battleship/internal/infra/database/dbgamestate"
@@ -13,7 +14,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"path/filepath"
 	"regexp"
 
 	"github.com/deepmap/oapi-codegen/pkg/middleware"
@@ -45,18 +45,8 @@ type Repository struct {
 	GameState   ucgame.GameStateRepository
 }
 
-type RepositoryOption struct {
-	Path string
-}
-
-func (opt RepositoryOption) File(key string) string {
-	path := filepath.Join(opt.Path, fmt.Sprintf("%s.json", key))
-	fmt.Printf("[DB] %s: %s\n", key, path)
-	return path
-}
-
 type Options struct {
-	Repo RepositoryOption
+	Repo database.RepositoryOption
 }
 
 func ErrorHandler(err error, c echo.Context) {

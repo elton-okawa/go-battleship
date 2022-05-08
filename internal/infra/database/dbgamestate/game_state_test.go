@@ -50,7 +50,7 @@ func (s TestGameStateSuite) TestSaveAndRead() {
 		true,
 	)
 
-	repoOption := database.RepositoryOption{Path: test.BaseDBFilePath}
+	repoOption := database.RepositoryOption{Path: test.DbFilePath()}
 	db := New(repoOption.File("game-state"))
 
 	saveErr := db.Save(gs)

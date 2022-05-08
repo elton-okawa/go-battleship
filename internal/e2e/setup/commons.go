@@ -1,6 +1,7 @@
 package setup
 
 import (
+	"elton-okawa/battleship/internal/infra/database"
 	"elton-okawa/battleship/internal/infra/router"
 	"elton-okawa/battleship/internal/test"
 	"fmt"
@@ -9,8 +10,8 @@ import (
 
 func TestServer() (*httptest.Server, *router.Repository) {
 	opt := router.Options{
-		Repo: router.RepositoryOption{
-			Path: test.BaseDBFilePath,
+		Repo: database.RepositoryOption{
+			Path: test.DbFilePath(),
 		},
 	}
 

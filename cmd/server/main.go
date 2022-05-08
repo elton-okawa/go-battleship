@@ -1,6 +1,7 @@
 package main
 
 import (
+	"elton-okawa/battleship/internal/infra/database"
 	"elton-okawa/battleship/internal/infra/router"
 	"fmt"
 	"math/rand"
@@ -14,9 +15,9 @@ func main() {
 	rand.Seed(time.Now().UnixNano())
 
 	fmt.Printf("Server listening to %s\n", address)
-	path, _ := filepath.Abs(filepath.Join("db"))
+	path, _ := filepath.Abs(filepath.Join("internal", "filedb"))
 	opt := router.Options{
-		Repo: router.RepositoryOption{
+		Repo: database.RepositoryOption{
 			Path: path,
 		},
 	}
